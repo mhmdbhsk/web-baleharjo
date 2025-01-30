@@ -9,6 +9,7 @@ import {
 } from 'react';
 import { use } from 'react';
 import { User } from '@/lib/db/schema';
+import { Toaster } from 'sonner';
 
 type UserContextType = {
   user: User | null;
@@ -42,6 +43,8 @@ export function UserProvider({
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}
+
+      <Toaster />
     </UserContext.Provider>
   );
 }
