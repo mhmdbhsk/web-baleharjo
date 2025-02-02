@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { User } from '@/lib/db/schema';
-import { getUser } from '@/lib/db/actions/users';
+import { User } from '@/db/schema';
+import { UserService } from '@/db/actions/users';
+
 
 export type ActionState = {
   error?: string;
@@ -38,7 +39,7 @@ export function validatedActionWithUser<S extends z.ZodType<any, any>, T>(
   action: ValidatedActionWithUserFunction<S, T>
 ) {
   return async (prevState: ActionState, formData: FormData): Promise<T> => {
-    const user = await getUser();
+    const user = await UserService.getCurrentUser();
     if (!user) {
       throw new Error('User is not authenticated');
     }

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlateEditor } from '@/components/editor/plate-editor';
 import { Button } from '@/components/ui/button';
-import { getBlogPostById } from '@/lib/db/actions/blog';
+import { getBlogPostById } from '@/db/actions/blog';
 
 export default async function EditBlogPostPage({
   params,

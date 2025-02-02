@@ -1,8 +1,7 @@
 import { Plus } from 'lucide-react';
-import SocialMediaForm from '@/components/form/social-media-form';
 import { Button } from '@/components/ui/button';
 
-export default async function SocialMediaPage() {
+export default async function InstitutionalPage() {
   return (
     <section className="flex-1 p-4 lg:p-8">
       <div className="flex w-full justify-between items-center mb-8">
@@ -19,8 +18,6 @@ export default async function SocialMediaPage() {
           </Button>
         </div>
       </div>
-
-      <SocialMediaForm />
     </section>
   );
 }

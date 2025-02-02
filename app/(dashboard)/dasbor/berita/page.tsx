@@ -1,10 +1,10 @@
 import { Button } from '@/components/ui/button';
-import { getAllBlogPosts } from '@/lib/db/actions/blog';
-import { Plus } from 'lucide-react';
+import { BlogService } from '@/db/actions/blog';
+import { Pencil, Plus, Trash } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function BlogPage() {
-  const posts = await getAllBlogPosts();
+  const posts = await BlogService.getAllBlogPosts();
 
   return (
     <section className="p-4 lg:p-8">
@@ -32,17 +32,16 @@ export default async function BlogPage() {
               </p>
             </div>
 
-            <div>
+            <div className="flex gap-2">
               <Link href={`/dasbor/berita/${post.id}`}>
-                <Button className="text-sm" size="sm" variant="ghost">
+                <Button size="sm" variant="outline">
+                  <Pencil className="w-2 h-2" />
                   Ubah
                 </Button>
-                <Button
-                  className="text-sm"
-                  size="sm"
-                  variant="ghost"
-                  color="red"
-                >
+              </Link>
+              <Link href={`/dasbor/berita/${post.id}`}>
+                <Button size="sm" variant="outline" color="red">
+                  <Trash className="w-2 h-2" />
                   Hapus
                 </Button>
               </Link>

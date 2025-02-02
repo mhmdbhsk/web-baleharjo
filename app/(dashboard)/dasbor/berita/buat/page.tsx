@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SettingsProvider } from '@/components/editor/settings';
 import { PlateEditor as CustomEditor } from '@/components/editor/plate-editor';
-import axios from 'axios';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/form';
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { generateSlug } from '@/lib/utils';
 
 const formSchema = z.object({
   title: z.string().nonempty('Judul wajib diisi'),
@@ -32,6 +33,11 @@ export default function CreateBlogPost() {
   const router = useRouter();
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      title: '',
+      slug: '',
+      content: '',
+    },
   });
 
   // const onSubmit = async (values: z.infer<typeof formSchema>) => {
@@ -114,11 +120,15 @@ export default function CreateBlogPost() {
                     {...field}
                     value={
                       form.watch('title')
-                        ? form.watch('title').toLowerCase().replace(/\s+/g, '-')
+                        ? generateSlug(form.watch('title'))
                         : ''
                     }
                   />
                 </FormControl>
+
+                <FormDescription>
+                  Slug akan digunakan untuk membuat URL berita
+                </FormDescription>
 
                 <FormMessage />
               </FormItem>

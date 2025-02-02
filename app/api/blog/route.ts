@@ -1,21 +1,67 @@
-import { createBlogPost, updateBlogPost } from '@/lib/db/actions/blog';
+
+import { BlogService } from '@/db/actions/blog';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 import { NextRequest, NextResponse } from 'next/server';
+import { db } from '@/db/drizzle';
+import { blogPosts } from '@/db/schema';
+import { desc, sql } from 'drizzle-orm';
+import { ApiResponse } from '@/types/api';
 
-export const POST = async (req: NextRequest) => {
-  const { title, content } = await req.json()
-
+export async function GET(request: NextRequest) {
   try {
-    await createBlogPost(title, content);
+    const searchParams = request.nextUrl.searchParams;
+    const page = parseInt(searchParams.get('page') || '1');
+    const limit = parseInt(searchParams.get('limit') || '10');
+    const offset = (page - 1) * limit;
+
+    const [posts, totalCount] = await Promise.all([
+      db
+        .select()
+        .from(blogPosts)
+        .orderBy(desc(blogPosts.createdAt))
+        .limit(limit)
+        .offset(offset),
+      db
+        .select({ count: sql<number>`count(*)` })
+        .from(blogPosts)
+        .then(res => Number(res[0].count))
+    ]);
 
     return NextResponse.json({
-      message: 'Blog post created'
-    }, { status: 201 })
+      message: 'Blog posts fetched successfully',
+      data: posts,
+      metadata: {
+        page,
+        limit,
+        total: totalCount,
+        totalPages: Math.ceil(totalCount / limit)
+      }
+    });
   } catch (error) {
-    return NextResponse.json({ error: 'Invalid body' }, { status: 400 })
+    return NextResponse.json({
+      message: 'Failed to fetch blog posts',
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    }, { status: 500 });
   }
-};
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const result = await db.insert(blogPosts).values(body);
+
+    return NextResponse.json({
+      message: 'Blog post created successfully',
+      data: result
+    }, { status: 201 });
+  } catch (error) {
+    return NextResponse.json({
+      message: 'Failed to create blog post',
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    }, { status: 500 });
+  }
+}
 
 export const PUT = async (req: NextApiRequest, res: NextApiResponse) => {
   const { title, content } = req.body;
@@ -29,12 +75,12 @@ export const PUT = async (req: NextApiRequest, res: NextApiResponse) => {
     return res.status(400).json({ error: 'Invalid post ID' });
   }
 
-  await updateBlogPost(postId as string, title, content);
+  await BlogService.updateBlogPost(postId as string, title, content);
 
   res.status(200).json({ message: 'Blog post updated' });
 }
 
-export const GET = (req: NextApiRequest, res: NextApiResponse) => {
+export const handleMethodNotAllowed = (req: NextApiRequest, res: NextApiResponse) => {
   res.setHeader('Allow', ['POST']);
   res.status(405).end(`Method ${req.method} Not Allowed`);
-}; 
+};

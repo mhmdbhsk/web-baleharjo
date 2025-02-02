@@ -1,17 +1,20 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Settings, AlertCircle } from 'lucide-react';
-import { ActivityType } from '@/lib/db/schema';
-import { getActivityLogs } from '@/lib/db/actions/users';
-import SocialMediaForm from '@/components/form/social-media-form';
+import OrganizationChart from '@/components/organization-chart';
+import { OrganizationService } from '@/db/actions/organization';
 
 export default async function SocialMediaPage() {
+  const data = await OrganizationService.getAll();
+
+  console.log(data, 'ini org data');
+
   return (
     <section className="flex-1 p-4 lg:p-8">
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
-        Sosial Media
+        Struktur Pemerintahan
       </h1>
 
-      <SocialMediaForm />
+      <div className="overflow-x-auto">
+        <OrganizationChart />
+      </div>
     </section>
   );
 }

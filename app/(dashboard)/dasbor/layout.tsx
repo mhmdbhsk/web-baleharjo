@@ -11,7 +11,6 @@ import {
   Activity,
   Menu,
   Newspaper,
-  User,
   Info,
   Globe,
   Calendar,
@@ -19,6 +18,7 @@ import {
   Landmark,
   Workflow,
   FileStack,
+  Gauge,
 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -30,7 +30,7 @@ export default function DashboardLayout({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   const navItems = [
-    { href: '/dasbor', icon: Users, label: 'Pengguna', subgroup: 'Manajemen' },
+    { href: '/dasbor', icon: Gauge, label: 'Dasbor', subgroup: null },
     {
       href: '/dasbor/berita',
       icon: Newspaper,
@@ -97,10 +97,16 @@ export default function DashboardLayout({
       label: 'Surat',
       subgroup: 'Manajemen',
     },
+    {
+      href: '/dasbor/pengguna',
+      icon: Users,
+      label: 'Pengguna',
+      subgroup: 'Manajemen',
+    },
   ];
 
   return (
-    <div className="flex flex-col min-h-[calc(100dvh-68px)] max-w-7xl mx-auto w-full">
+    <div className="flex flex-col min-h-[100dvh] max-w-7xl mx-auto w-full sticky pt-[78px]">
       {/* Mobile header */}
       <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
         <div className="flex items-center">
@@ -119,19 +125,42 @@ export default function DashboardLayout({
       <div className="flex flex-1 overflow-hidden h-full">
         {/* Sidebar */}
         <aside
-          className={`w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${
-            isSidebarOpen ? 'block' : 'hidden'
-          } lg:relative absolute inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-          }`}
+          className={`sticky top-0 bottom-0 left-0 h-full max-h-[calc(100dvh-78px)] overflow-y-auto
+              w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${
+                isSidebarOpen ? 'block' : 'hidden'
+              } lg:relative absolute inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+                isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+              }`}
         >
           <nav className="h-full overflow-y-auto p-2">
+            {/* Render null subgroup items first */}
+            {navItems
+              .filter(item => !item.subgroup)
+              .map((item) => (
+                <Link key={item.href} href={item.href} passHref>
+                  <Button
+                    variant={pathname === item.href ? 'secondary' : 'ghost'}
+                    className={`shadow-none my-1 w-full justify-start text-sm ${
+                      pathname === item.href ? 'bg-gray-100' : ''
+                    }`}
+                    onClick={() => setIsSidebarOpen(false)}
+                  >
+                    <item.icon className="mr-2 h-4 w-4" />
+                    {item.label}
+                  </Button>
+                </Link>
+              ))}
+
+            {/* Render grouped items */}
             {Object.entries(
               navItems.reduce((acc, item) => {
-                if (!acc[item.subgroup]) {
-                  acc[item.subgroup] = [];
+                if (item.subgroup && !acc.hasOwnProperty(item.subgroup)) {
+                  (acc as Record<string, typeof navItems>)[item.subgroup] = [];
                 }
-                acc[item.subgroup].push(item);
+                if (item.subgroup)
+                  (acc as Record<string, typeof navItems>)[item.subgroup].push(
+                    item
+                  );
                 return acc;
               }, {})
             ).map(([subgroup, items]) => (
@@ -139,7 +168,7 @@ export default function DashboardLayout({
                 <h3 className="text-xs tracking-wide text-muted-foreground my-2 ml-4">
                   {subgroup}
                 </h3>
-                {items.map((item) => (
+                {(items as typeof navItems).map((item) => (
                   <Link key={item.href} href={item.href} passHref>
                     <Button
                       variant={pathname === item.href ? 'secondary' : 'ghost'}
@@ -157,7 +186,6 @@ export default function DashboardLayout({
             ))}
           </nav>
         </aside>
-
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-0">{children}</main>
       </div>

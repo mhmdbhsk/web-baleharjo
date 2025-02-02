@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
-import { db } from '@/lib/db/drizzle';
+import { db } from '@/db/drizzle';
 import {
   User,
   users,
@@ -10,11 +10,11 @@ import {
   type NewUser,
   type NewActivityLog,
   ActivityType,
-} from '@/lib/db/schema';
+} from '@/db/schema';
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { getUser } from '@/lib/db/actions/users';
+import { UserService } from '@/db/actions/users';
 import {
   validatedAction,
   validatedActionWithUser,
@@ -81,7 +81,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 });
 
 export async function signOut() {
-  const user = (await getUser()) as User;
+  const user = (await UserService.getCurrentUser()) as User;
   await logActivity(user.id, ActivityType.SIGN_OUT);
   (await cookies()).delete('session');
 }

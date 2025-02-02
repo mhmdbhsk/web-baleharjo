@@ -1,7 +1,7 @@
 import { compare, hash } from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
-import { NewUser } from '@/lib/db/schema';
+import { NewUser } from '@/db/schema';
 
 const key = new TextEncoder().encode(process.env.AUTH_SECRET);
 const SALT_ROUNDS = 10;
@@ -18,7 +18,7 @@ export async function comparePasswords(
 }
 
 type SessionData = {
-  user: { id: number };
+  user: { id: string };
   expires: string;
 };
 

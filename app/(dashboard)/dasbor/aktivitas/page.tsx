@@ -7,9 +7,11 @@ import {
   AlertCircle,
   UserMinus,
   type LucideIcon,
+  FilePlus,
+  FileMinus,
 } from 'lucide-react';
-import { ActivityType } from '@/lib/db/schema';
-import { getActivityLogs } from '@/lib/db/actions/users';
+import { ActivityType } from '@/db/schema';
+import { UserService } from '@/db/actions/users';
 
 const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.SIGN_UP]: UserPlus,
@@ -18,6 +20,9 @@ const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.UPDATE_PASSWORD]: Lock,
   [ActivityType.DELETE_ACCOUNT]: UserMinus,
   [ActivityType.UPDATE_ACCOUNT]: Settings,
+  [ActivityType.CREATE_POST]: FilePlus,
+  [ActivityType.UPDATE_POST]: Settings,
+  [ActivityType.DELETE_POST]: FileMinus,
 };
 
 function getRelativeTime(date: Date) {
@@ -54,7 +59,7 @@ function formatAction(action: ActivityType): string {
 }
 
 export default async function ActivityPage() {
-  const logs = await getActivityLogs();
+  const logs = await UserService.getActivityLogs();
 
   return (
     <section className="flex-1 p-4 lg:p-8">

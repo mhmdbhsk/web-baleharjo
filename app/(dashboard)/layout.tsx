@@ -29,7 +29,7 @@ function Header() {
   }
 
   return (
-    <header className="border-b border-gray-200">
+    <header className="fixed inset-x-0 top-0 z-100 border-b border-gray-950/5 dark:border-white/10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <Logo />
         <div className="flex items-center space-x-4">
@@ -78,7 +78,7 @@ function Header() {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="flex flex-col min-h-screen">
+    <section className="flex flex-col min-h-screen isolate">
       <Header />
       {children}
     </section>
