@@ -34,7 +34,11 @@ import {
   updateActivity,
 } from '@/services/activity.services';
 import { Activity } from '@/db/schema';
-import { formatDate } from '@/lib/utils/date';
+import { formatDate } from '@/lib/utils';
+import { useCallback } from 'react';
+import { generateBlurHash } from '@/lib/generate-blurhash';
+import { useUploadThing } from '@/lib/uploadthing';
+import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
 
 export default function KegiatanPage() {
   const [selectedKegiatan, setSelectedKegiatan] = useState<Activity | null>(
@@ -44,18 +48,60 @@ export default function KegiatanPage() {
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
+  const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [blurhash, setBlurhash] = useState<string | null>(null);
+  const { uploadImage, isLoading, error } = useCloudinaryUpload();
 
   const {
     data,
     isLoading: isLoadingData,
     refetch,
   } = useQuery({
-    queryKey: ['activities'],
-    queryFn: () => getActivities(),
+    queryKey: ['activities', pageIndex, pageSize, search],
+    queryFn: () =>
+      getActivities({
+        page: pageIndex + 1,
+        limit: pageSize,
+        search,
+      }),
   });
 
   const { mutate: create, isPending: isCreating } = useMutation({
-    mutationFn: (values: ActivityDto) => createActivity(values),
+    mutationFn: async (values: ActivityDto) => {
+      if (values.image) {
+        try {
+          const { url, blurhash } = await uploadImage(values.image as File);
+          setImageUrl(url);
+          setBlurhash(blurhash);
+          console.log(url, blurhash);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      const data = {
+        title: values.title,
+        date: values.date,
+        description: values.description,
+        location: values.location,
+        image: imageUrl || null,
+        blurhash: blurhash || null,
+      };
+      console.log(data);
+
+      return createActivity({
+        title: values.title,
+        date: values.date,
+        description: values.description,
+        location: values.location,
+        image: imageUrl || null,
+        blurhash: blurhash || null,
+      });
+    },
     onSuccess: () => {
       refetch();
       setIsAddOpen(false);
@@ -68,13 +114,35 @@ export default function KegiatanPage() {
   });
 
   const { mutate: update, isPending: isUpdating } = useMutation({
-    mutationFn: ({
+    mutationFn: async ({
       id,
       values,
     }: {
       id: string;
-      values: Partial<ActivityDto>;
-    }) => updateActivity(id, values),
+      values: Partial<ActivityDto> & { image?: File };
+    }) => {
+      if (values.image) {
+        try {
+          const { url, blurhash } = await uploadImage(values.image!);
+          setImageUrl(url);
+          setBlurhash(blurhash);
+
+          return updateActivity(id, {
+            ...values,
+            image: url,
+            blurhash: blurhash,
+          });
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      return updateActivity(id, {
+        ...values,
+        image: imageUrl,
+        blurhash: blurhash,
+      });
+    },
     onSuccess: () => {
       refetch();
       setIsEditOpen(false);
@@ -101,7 +169,7 @@ export default function KegiatanPage() {
     {
       accessorKey: 'title',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title="Nama Kegiatan" />
       ),
     },
     {
@@ -117,7 +185,7 @@ export default function KegiatanPage() {
     {
       accessorKey: 'location',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Location" />
+        <DataTableColumnHeader column={column} title="Lokasi" />
       ),
     },
     createActionColumn<Activity>({
@@ -137,15 +205,15 @@ export default function KegiatanPage() {
   ];
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
-      <div className="flex w-full justify-between items-center mb-8">
+    <section>
+      <div className="flex w-full justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
             Kegiatan
           </h1>
         </div>
 
-        <div className="">
+        <div>
           <Button size="sm" onClick={() => setIsAddOpen(true)}>
             <Plus className="h-4 w-4" />
             Tambah Kegiatan
@@ -158,6 +226,13 @@ export default function KegiatanPage() {
         data={data?.data || []}
         searchKey="title"
         isLoading={isLoadingData}
+        pageCount={data?.metadata?.totalPages || 1}
+        pageSize={pageSize}
+        pageIndex={pageIndex}
+        onPageChange={setPageIndex}
+        onPageSizeChange={setPageSize}
+        onSearch={setSearch}
+        searchValue={search}
       />
 
       {/* Add Dialog */}
@@ -169,19 +244,7 @@ export default function KegiatanPage() {
               Isi formulir kegiatan baru di bawah ini.
             </DialogDescription>
           </DialogHeader>
-          <ActivityForm
-            onSubmit={(values) =>
-              create({
-                title: values.title,
-                date: values.date,
-                description: values.description,
-                location: values.location,
-                image: null,
-                blurhash: null,
-              })
-            }
-            isLoading={isCreating}
-          />
+          <ActivityForm onSubmit={create} isLoading={isCreating} />
         </DialogContent>
       </Dialog>
 

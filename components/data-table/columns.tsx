@@ -33,15 +33,15 @@ export function createActionColumn<TData>(
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+            <DropdownMenuLabel>Aksi</DropdownMenuLabel>
             {props.onView && (
               <DropdownMenuItem onClick={() => props.onView?.(data)}>
-                View details
+                Lihat Detail
               </DropdownMenuItem>
             )}
             {props.onEdit && (
               <DropdownMenuItem onClick={() => props.onEdit?.(data)}>
-                Edit
+                Ubah
               </DropdownMenuItem>
             )}
             {props.onDelete && (
@@ -49,7 +49,7 @@ export function createActionColumn<TData>(
                 onClick={() => props.onDelete?.(data)}
                 className="text-red-600"
               >
-                Delete
+                Hapus
               </DropdownMenuItem>
             )}
           </DropdownMenuContent>

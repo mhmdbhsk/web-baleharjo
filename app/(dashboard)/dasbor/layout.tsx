@@ -106,36 +106,35 @@ export default function DashboardLayout({
   ];
 
   return (
-    <div className="flex flex-col min-h-[100dvh] max-w-7xl mx-auto w-full sticky pt-[78px]">
-      {/* Mobile header */}
-      <div className="lg:hidden flex items-center justify-between bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center">
-          <span className="font-medium">Settings</span>
+    <div className="flex flex-col min-h-screen">
+      <div className="lg:hidden fixed top-[78px] left-0 right-0 z-50 bg-white border-b border-gray-200 p-4">
+        <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
+          <div className="flex items-center">
+            <span className="font-medium">Settings</span>
+          </div>
+          <Button
+            variant="outline"
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+          >
+            <Menu className="h-6 w-6" />
+            <span className="sr-only">Toggle sidebar</span>
+          </Button>
         </div>
-        <Button
-          className="-mr-3"
-          variant="ghost"
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-        >
-          <Menu className="h-6 w-6" />
-          <span className="sr-only">Toggle sidebar</span>
-        </Button>
       </div>
 
-      <div className="flex flex-1 overflow-hidden h-full">
+      <div className="flex flex-1 pt-[78px]">
         {/* Sidebar */}
         <aside
-          className={`sticky top-0 bottom-0 left-0 h-full max-h-[calc(100dvh-78px)] overflow-y-auto
-              w-64 bg-white lg:bg-gray-50 border-r border-gray-200 lg:block ${
-                isSidebarOpen ? 'block' : 'hidden'
-              } lg:relative absolute inset-y-0 left-0 z-40 transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-                isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
-              }`}
+          className={`fixed lg:sticky top-[78px] left-0 h-[calc(100vh-78px)] w-64 
+            bg-white lg:bg-gray-50 border-r border-gray-200 
+            overflow-y-auto transition-transform duration-300 ease-in-out
+            lg:translate-x-0 z-[100]
+            ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            ${isSidebarOpen ? 'block' : 'hidden lg:block'}`}
         >
-          <nav className="h-full overflow-y-auto p-2">
-            {/* Render null subgroup items first */}
+          <nav className="h-full p-2 z-50">
             {navItems
-              .filter(item => !item.subgroup)
+              .filter((item) => !item.subgroup)
               .map((item) => (
                 <Link key={item.href} href={item.href} passHref>
                   <Button
@@ -186,8 +185,10 @@ export default function DashboardLayout({
             ))}
           </nav>
         </aside>
-        {/* Main content */}
-        <main className="flex-1 overflow-y-auto p-0">{children}</main>
+
+        <main className="flex-1 w-full lg:w-[calc(100%-16rem)] min-h-[calc(100vh-78px)] p-10 pt-[86px] lg:pt-8">
+          {children}
+        </main>
       </div>
     </div>
   );

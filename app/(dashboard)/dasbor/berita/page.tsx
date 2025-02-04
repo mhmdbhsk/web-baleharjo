@@ -1,11 +1,8 @@
 import { Button } from '@/components/ui/button';
-import { BlogService } from '@/db/actions/blog';
-import { Pencil, Plus, Trash } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function BlogPage() {
-  const posts = await BlogService.getAllBlogPosts();
-
   return (
     <section className="p-4 lg:p-8">
       <div className="flex justify-between items-center">
@@ -21,7 +18,7 @@ export default async function BlogPage() {
         </Link>
       </div>
 
-      <ul className="space-y-4">
+      {/* <ul className="space-y-4">
         {posts.map((post) => (
           <li key={post.id} className="border-b pb-4 flex justify-between">
             <div>
@@ -48,7 +45,7 @@ export default async function BlogPage() {
             </div>
           </li>
         ))}
-      </ul>
+      </ul> */}
     </section>
   );
 }

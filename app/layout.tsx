@@ -2,8 +2,8 @@ import './globals.css';
 import type { Metadata, Viewport } from 'next';
 import { UserProvider } from '@/lib/auth';
 import generalSans from './fonts';
-import { UserService } from '@/db/actions/users';
 import QueryProvider from '@/components/query-provider';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 export const metadata: Metadata = {
   title: 'Baleharjo',
@@ -26,9 +26,7 @@ export default async function RootLayout({
     >
       <body className="min-h-[100dvh] bg-gray-50">
         <QueryProvider>
-          <UserProvider userPromise={UserService.getCurrentUser()}>
-            {children}
-          </UserProvider>
+          <UserProvider userPromise={getCurrentUser()}>{children}</UserProvider>
         </QueryProvider>
       </body>
     </html>

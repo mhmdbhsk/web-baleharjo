@@ -22,6 +22,7 @@ import {
 import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { generateSlug } from '@/lib/utils';
+import axios from 'axios';
 
 const formSchema = z.object({
   title: z.string().nonempty('Judul wajib diisi'),
@@ -40,35 +41,35 @@ export default function CreateBlogPost() {
     },
   });
 
-  // const onSubmit = async (values: z.infer<typeof formSchema>) => {
-  //   if (!values.title || !values.content || !values.slug) {
-  //     return;
-  //   }
-
-  //   try {
-  //     const result = await axios
-  //       .post('/api/blog', values)
-  //       .then((res) => res.data);
-  //     toast.success(result);
-  //     router.push('/dasbor/berita');
-  //   } catch (error) {
-  //     toast.error('Terjadi kesalahan saat menyimpan berita');
-  //   }
-  // };
-
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
+  const onSubmit = async (values: z.infer<typeof formSchema>) => {
+    if (!values.title || !values.content || !values.slug) {
+      return;
     }
-  }
+
+    try {
+      const result = await axios
+        .post('/api/blog', values)
+        .then((res) => res.data);
+      toast.success(result);
+      router.push('/dasbor/berita');
+    } catch (error) {
+      toast.error('Terjadi kesalahan saat menyimpan berita');
+    }
+  };
+
+  // function onSubmit(values: z.infer<typeof formSchema>) {
+  //   try {
+  //     console.log(values);
+  //     toast(
+  //       <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+  //         <code className="text-white">{JSON.stringify(values, null, 2)}</code>
+  //       </pre>
+  //     );
+  //   } catch (error) {
+  //     console.error('Form submission error', error);
+  //     toast.error('Failed to submit the form. Please try again.');
+  //   }
+  // }
 
   return (
     <section className="p-4 lg:p-8">

@@ -15,6 +15,13 @@
       "when": 1738277126477,
       "tag": "0001_tidy_squadron_sinister",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1738493031857,
+      "tag": "0002_bitter_madame_hydra",
+      "breakpoints": true
     }
   ]
 }

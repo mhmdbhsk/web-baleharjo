@@ -1,12 +1,8 @@
-import { Button } from '@/components/ui/button';
-import { ArrowRight, Database } from 'lucide-react';
+import { Database } from 'lucide-react';
 
 import UnderlineLink from '@/components/underlined-link';
-import { BlogService } from '@/db/actions/blog';
 
 export default async function HomePage() {
-  const posts = await BlogService.getAllBlogPosts();
-
   return (
     <main>
       <section className="py-20">
@@ -72,7 +68,7 @@ export default async function HomePage() {
             Welcome to Our Blog
           </h1>
           <ul className="space-y-4 mt-8">
-            {posts.map((post) => (
+            {/* {posts.map((post) => (
               <li key={post.id} className="border-b pb-4">
                 <h2 className="text-xl font-bold">{post.title}</h2>
                 <p className="text-sm text-gray-500">
@@ -81,7 +77,7 @@ export default async function HomePage() {
                 </p>
                 <p className="mt-2">{post.content}</p>
               </li>
-            ))}
+            ))} */}
           </ul>
         </div>
       </section>

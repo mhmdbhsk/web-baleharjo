@@ -32,7 +32,7 @@ export default function ProfilePage() {
   });
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
+    <section>
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
         Profil
       </h1>

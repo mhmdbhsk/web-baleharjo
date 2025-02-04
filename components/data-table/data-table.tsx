@@ -8,7 +8,6 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
@@ -28,67 +27,151 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { useState } from 'react';
-import { ChevronDown, Settings2 } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { Search, Settings2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 
+// Add these to the existing interface
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   searchKey?: string;
-  isLoading?: boolean; // Add isLoading prop
+  isLoading?: boolean;
+  pageCount?: number;
+  pageSize?: number;
+  pageIndex?: number;
+  onPageChange?: (pageIndex: number) => void;
+  onPageSizeChange?: (pageSize: number) => void;
+  // Add these new props
+  onSearch?: (value: string) => void;
+  searchValue?: string;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   searchKey,
-  isLoading = false, // Default to false
+  isLoading,
+  pageCount = 1,
+  pageSize = 10,
+  pageIndex = 0,
+  onPageChange,
+  onPageSizeChange,
+  onSearch,
+  searchValue = '',
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [localSearchValue, setLocalSearchValue] = useState(searchValue);
+
+  // Sync local search value with prop
+  useEffect(() => {
+    setLocalSearchValue(searchValue);
+  }, [searchValue]);
+
+  // Handle debounced search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (localSearchValue !== searchValue) {
+        onSearch?.(localSearchValue);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [localSearchValue, searchValue, onSearch]);
 
   const table = useReactTable({
     data,
     columns,
+    pageCount: pageCount,
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    onPaginationChange: (updater) => {
+      if (typeof updater === 'function') {
+        const newState = updater({ pageIndex, pageSize });
+        onPageChange?.(newState.pageIndex);
+        onPageSizeChange?.(newState.pageSize);
+      }
+    },
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      pagination: {
+        pageIndex,
+        pageSize,
+      },
     },
+    manualPagination: true,
   });
+
+  if (isLoading) {
+    return (
+      <div>
+        <div className="flex items-center py-4 gap-2">
+          <Skeleton className="h-8 w-[150px]" />
+          <Skeleton className="h-8 w-[100px] ml-auto" />
+        </div>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                {columns.map((column, i) => (
+                  <TableHead
+                    key={typeof column.id === 'string' ? column.id : i}
+                  >
+                    <Skeleton className="h-6 w-full" />
+                  </TableHead>
+                ))}
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Array.from({ length: 5 }).map((_, index) => (
+                <TableRow key={index}>
+                  {columns.map((column, cellIndex) => (
+                    <TableCell key={cellIndex}>
+                      <Skeleton className="h-6 w-full" />
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+        <div className="flex items-center justify-end space-x-2 py-4">
+          <Skeleton className="h-8 w-[80px]" />
+          <Skeleton className="h-8 w-[80px]" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
       <div className="flex items-center py-4 gap-2">
         {searchKey && (
           <Input
-            placeholder="Search..."
-            value={
-              (table.getColumn(searchKey)?.getFilterValue() as string) ?? ''
-            }
-            onChange={(event) =>
-              table.getColumn(searchKey)?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
+            ref={(input) => input?.focus()}
+            leftIcon={<Search className="h-4 w-4" />}
+            placeholder="Cari"
+            value={localSearchValue}
+            onChange={(event) => setLocalSearchValue(event.target.value)}
+            className="max-w-48"
           />
         )}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
-              <Settings2 className="mr-2 h-4 w-4" />
-              View
+            <Button variant="outline" className="ml-auto" size="sm">
+              <Settings2 className="h-4 w-4" />
+              Tampilan
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">

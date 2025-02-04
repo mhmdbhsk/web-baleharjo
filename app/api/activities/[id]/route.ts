@@ -3,6 +3,7 @@ import { db } from '@/db/drizzle';
 import { activity } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { ApiResponse } from '@/types/api';
+import { format, formatISO } from 'date-fns';
 
 export async function GET(
   request: NextRequest,
@@ -46,7 +47,11 @@ export async function PUT(
     const body = await request.json();
     const result = await db
       .update(activity)
-      .set({ ...body, updatedAt: new Date() })
+      .set({
+        ...body,
+        date: formatISO(body.date),
+        updatedAt: new Date()
+      })
       .where(eq(activity.id, await params.id))
       .returning();
 

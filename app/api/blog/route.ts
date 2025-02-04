@@ -1,12 +1,10 @@
 
-import { BlogService } from '@/db/actions/blog';
 import { NextApiRequest, NextApiResponse } from 'next';
-
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { blogPosts } from '@/db/schema';
 import { desc, sql } from 'drizzle-orm';
-import { ApiResponse } from '@/types/api';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 export async function GET(request: NextRequest) {
   try {
@@ -48,6 +46,14 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== 'admin') {
+      return NextResponse.json({
+        message: 'Unauthorized access',
+        error: 'Admin privileges required'
+      }, { status: 401 });
+    }
+
     const body = await request.json();
     const result = await db.insert(blogPosts).values(body);
 
@@ -74,8 +80,6 @@ export const PUT = async (req: NextApiRequest, res: NextApiResponse) => {
   if (!postId) {
     return res.status(400).json({ error: 'Invalid post ID' });
   }
-
-  await BlogService.updateBlogPost(postId as string, title, content);
 
   res.status(200).json({ message: 'Blog post updated' });
 }

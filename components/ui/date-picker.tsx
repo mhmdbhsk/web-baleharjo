@@ -80,22 +80,16 @@ const DatetimeGrid = forwardRef<
                   ? group.map((unit, j) => (
                       <React.Fragment key={unit}>
                         <Input
-                          className={cn(
-                            timePickerInputBase,
-                            'min-w-8 bg-foreground/15',
-                            {
-                              'min-w-10': unit === 'years',
-                            }
-                          )}
+                          className={cn(timePickerInputBase, 'min-w-8', {
+                            'min-w-10': unit === 'years',
+                          })}
                           {...timescape.getInputProps(unit)}
                           placeholder={placeholders[unit]}
                         />
                         {i === 0 && j < group.length - 1 ? (
-                          // date separator
                           <span className={timePickerSeparatorBase}>/</span>
                         ) : (
                           j < group.length - 2 && (
-                            // time separator
                             <span className={timePickerSeparatorBase}>:</span>
                           )
                         )}

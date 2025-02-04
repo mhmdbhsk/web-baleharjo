@@ -11,7 +11,6 @@ import {
   FileMinus,
 } from 'lucide-react';
 import { ActivityType } from '@/db/schema';
-import { UserService } from '@/db/actions/users';
 
 const iconMap: Record<ActivityType, LucideIcon> = {
   [ActivityType.SIGN_UP]: UserPlus,
@@ -59,15 +58,13 @@ function formatAction(action: ActivityType): string {
 }
 
 export default async function ActivityPage() {
-  const logs = await UserService.getActivityLogs();
-
   return (
-    <section className="flex-1 p-4 lg:p-8">
+    <section>
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
         Riwayat Aktivitas
       </h1>
 
-      {logs.length > 0 ? (
+      {/* {logs.length > 0 ? (
         <ul className="space-y-4">
           {logs.map((log) => {
             const Icon = iconMap[log.action as ActivityType] || Settings;
@@ -102,7 +99,7 @@ export default async function ActivityPage() {
             they'll appear here.
           </p>
         </div>
-      )}
+      )} */}
     </section>
   );
 }

@@ -33,7 +33,6 @@ export const blogPosts = pgTable('blog_posts', {
   coverImage: text('cover_image'),
   isHighlighted: varchar('is_highlighted', { length: 1 }).default('0'),
   slug: varchar('slug', { length: 255 }).notNull().unique(),
-  excerpt: text('excerpt').notNull(),
   content: text('content').notNull(),
   authorId: varchar('author_id').notNull().references(() => users.id),
   createdAt: timestamp('created_at').notNull().defaultNow(),
@@ -48,8 +47,6 @@ export const organizationMembers: any = pgTable('organization_members', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
-
-
 
 export const organizationMembersRelations = relations(organizationMembers, ({ many, one }) => ({
   children: many(organizationMembers, {

@@ -14,11 +14,11 @@ import {
 import { comparePasswords, hashPassword, setSession } from '@/lib/auth/session';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
-import { UserService } from '@/db/actions/users';
 import {
   validatedAction,
   validatedActionWithUser,
 } from '@/lib/auth/middleware';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 async function logActivity(
   userId: string,
@@ -81,7 +81,7 @@ export const signIn = validatedAction(signInSchema, async (data, formData) => {
 });
 
 export async function signOut() {
-  const user = (await UserService.getCurrentUser()) as User;
+  const user = (await getCurrentUser()) as User;
   await logActivity(user.id, ActivityType.SIGN_OUT);
   (await cookies()).delete('session');
 }

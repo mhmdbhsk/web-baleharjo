@@ -15,13 +15,19 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { DatetimePicker } from '../ui/date-picker';
-import { Calendar } from '../ui/calendar';
 
 const formSchema = z.object({
   title: z.string().min(1, 'Title is required'),
   description: z.string().min(1, 'Description is required'),
   date: z.coerce.date(),
   location: z.string().min(1, 'Location is required'),
+  image: z
+    .custom<File>((v) => v instanceof File, {
+      message: 'File harus diisi',
+    })
+    .refine((file) => file?.size <= 1000000, {
+      message: `Ukuran file maksimal 5MB.`,
+    }),
 });
 
 interface ActivityFormProps {
@@ -42,6 +48,7 @@ export function ActivityForm({
       description: initialData?.description || '',
       date: initialData?.date ? new Date(initialData.date) : new Date(),
       location: initialData?.location || '',
+      image: initialData?.image || '',
     },
   });
 
@@ -80,16 +87,12 @@ export function ActivityForm({
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Tanggal</FormLabel>
-              {/* <DatetimePicker
-                {...field}
-                format={[
-                  ['months', 'days', 'years'],
-                  ['hours', 'minutes'],
-                ]}
-              /> */}
 
-              <Calendar />
-
+              <DatetimePicker
+                value={field.value}
+                onChange={field.onChange}
+                disabled={isLoading}
+              />
               <FormMessage />
             </FormItem>
           )}
@@ -107,6 +110,28 @@ export function ActivityForm({
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="image"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Foto/Lampiran</FormLabel>
+              <FormControl>
+                <Input
+                  placeholder="Masukkan foto yang akan digunakan"
+                  type="file"
+                  onChange={(e) =>
+                    field.onChange(e.target.files ? e.target.files[0] : null)
+                  }
+                />
+              </FormControl>
+
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <Button type="submit" disabled={isLoading}>
           Save
         </Button>

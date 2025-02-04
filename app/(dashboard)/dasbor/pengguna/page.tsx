@@ -45,13 +45,6 @@ export default async function PenggunaPage() {
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // const { data, error, isError } = useQuery({
-  //   queryKey: ['posts'],
-  //   queryFn: getAllActivities,
-  // });
-
-  // console.log(data, 'ini data');
-
   const columns: ColumnDef<Pengguna>[] = [
     {
       accessorKey: 'title',
@@ -130,7 +123,7 @@ export default async function PenggunaPage() {
   };
 
   return (
-    <section className="flex-1 p-4 lg:p-8">
+    <section>
       <div className="flex w-full justify-between items-center mb-8">
         <div className="flex items-center">
           <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
@@ -138,7 +131,7 @@ export default async function PenggunaPage() {
           </h1>
         </div>
 
-        <div className="">
+        <div>
           <Button size="sm" onClick={() => setIsAddOpen(true)}>
             <Plus className="mr-2 h-4 w-4" />
             Tambah Pengguna

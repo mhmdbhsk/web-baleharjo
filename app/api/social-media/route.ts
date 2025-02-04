@@ -2,8 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { socialMedia } from '@/db/schema';
 import { desc, sql } from 'drizzle-orm';
-import { ApiResponse } from '@/types/api';
-import { UserService } from '@/db/actions/users';
+import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 
 export async function GET(request: NextRequest) {
@@ -46,7 +45,7 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const currentUser = await UserService.getCurrentUser();
+    const currentUser = await getCurrentUser();
     if (!currentUser || currentUser.role !== 'admin') {
       return NextResponse.json({
         message: 'Unauthorized access',

@@ -1,9 +1,37 @@
 import { Activity } from '@/db/schema';
 import { ApiResponse } from '@/types/api';
 
-export async function getActivities(page = 1, limit = 10): Promise<ApiResponse<Activity[]>> {
-  const response = await fetch(`/api/activities?page=${page}&limit=${limit}`);
-  if (!response.ok) throw new Error('Failed to fetch activities');
+interface GetActivitiesParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export async function getActivities({
+  page = 1,
+  limit = 10,
+  search = ''
+}: GetActivitiesParams = {}) {
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+
+  if (search) {
+    params.append('search', search);
+  }
+
+  const response = await fetch(
+    `/api/activities?${params.toString()}`,
+    {
+      method: 'GET',
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch activities');
+  }
+
   return response.json();
 }
 
