@@ -81,6 +81,26 @@ export default async function HomePage() {
           </ul>
         </div>
       </section>
+
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
+            Welcome to Our Blog
+          </h1>
+          <ul className="space-y-4 mt-8">
+            {/* {posts.map((post) => (
+              <li key={post.id} className="border-b pb-4">
+                <h2 className="text-xl font-bold">{post.title}</h2>
+                <p className="text-sm text-gray-500">
+                  By {post.authorName} on{' '}
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </p>
+                <p className="mt-2">{post.content}</p>
+              </li>
+            ))} */}
+          </ul>
+        </div>
+      </section>
     </main>
   );
 }

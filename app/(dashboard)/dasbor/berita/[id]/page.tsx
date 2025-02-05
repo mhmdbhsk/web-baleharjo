@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { PlateEditor } from '@/components/editor/plate-editor';
 import { Button } from '@/components/ui/button';
-import { getBlogPostById } from '@/db/actions/blog';
 
 export default async function EditBlogPostPage({
   params,
@@ -15,7 +14,7 @@ export default async function EditBlogPostPage({
   const [content, setContent] = useState<string | null>('');
   const router = useRouter();
   const id = (await params).id;
-  const post = await getBlogPostById(id);
+  // const post = await getBlogPostById(id);
 
   const handleSave = async () => {
     router.push('/dasbor/blog');

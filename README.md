@@ -39,8 +39,8 @@ Fun fact: the majority of the UI for this application was built with [v0](https:
 ## Getting Started
 
 ```bash
-git clone https://github.com/leerob/next-saas-starter
-cd next-saas-starter
+git clone https://github.com/nextjs/saas-starter
+cd saas-starter
 pnpm install
 ```
 
@@ -81,7 +81,7 @@ When you're ready to deploy your SaaS application to production, follow these st
 ### Deploy to Vercel
 
 1. Push your code to a GitHub repository.
-2. Connect your repository to Vercel and deploy it.
+2. Connect your repository to [Vercel](https://vercel.com/) and deploy it.
 3. Follow the Vercel deployment process, which will guide you through setting up your project.
 
 ### Add environment variables

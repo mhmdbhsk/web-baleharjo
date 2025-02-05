@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Home, LogOut } from 'lucide-react';
 import {
@@ -19,12 +19,13 @@ import Logo from '@/components/logo';
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, setUser } = useUser();
+  const { userPromise } = useUser();
+  const user = use(userPromise);
   const router = useRouter();
 
   async function handleSignOut() {
-    setUser(null);
     await signOut();
+    router.refresh();
     router.push('/');
   }
 
