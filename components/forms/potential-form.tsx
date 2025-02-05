@@ -1,11 +1,8 @@
 'use client';
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Form,
   FormControl,
@@ -14,13 +11,15 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { DatetimePicker } from '../ui/date-picker';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Potential } from '@/db/schema';
 
 const formSchema = z.object({
-  title: z.string().min(1, 'Title is required'),
-  description: z.string().min(1, 'Description is required'),
-  date: z.coerce.date(),
-  location: z.string().min(1, 'Location is required'),
+  title: z.string().min(1, 'Judul harus diisi'),
+  description: z.string().min(1, 'Deskripsi harus diisi'),
+  category: z.string().min(1, 'Kategori harus diisi'),
   image: z
     .custom<File>((v) => v instanceof File, {
       message: 'File harus diisi',
@@ -30,25 +29,26 @@ const formSchema = z.object({
     }),
 });
 
-interface ActivityFormProps {
+export type PotentialFormValues = z.infer<typeof formSchema>;
+
+interface PotentialFormProps {
   initialData?: any;
-  onSubmit: (values: z.infer<typeof formSchema>) => void;
+  onSubmit: (values: PotentialFormValues) => void;
   isLoading?: boolean;
 }
 
-export function ActivityForm({
+export function PotentialForm({
   initialData,
   onSubmit,
   isLoading,
-}: ActivityFormProps) {
-  const form = useForm<z.infer<typeof formSchema>>({
+}: PotentialFormProps) {
+  const form = useForm<PotentialFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       title: initialData?.title || '',
       description: initialData?.description || '',
-      date: initialData?.date ? new Date(initialData.date) : new Date(),
-      location: initialData?.location || '',
-      image: initialData?.image || '',
+      category: initialData?.category || '',
+      image: initialData?.image || undefined,
     },
   });
 
@@ -60,51 +60,41 @@ export function ActivityForm({
           name="title"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Title</FormLabel>
+              <FormLabel>Judul</FormLabel>
               <FormControl>
-                <Input disabled={isLoading} {...field} />
+                <Input placeholder="Masukkan judul" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
+
+        <FormField
+          control={form.control}
+          name="category"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Kategori</FormLabel>
+              <FormControl>
+                <Input placeholder="Masukkan kategori" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <FormField
           control={form.control}
           name="description"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Description</FormLabel>
+              <FormLabel>Deskripsi</FormLabel>
               <FormControl>
-                <Textarea disabled={isLoading} {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="date"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Tanggal</FormLabel>
-
-              <DatetimePicker
-                value={field.value}
-                onChange={field.onChange}
-                disabled={isLoading}
-              />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="location"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input disabled={isLoading} {...field} />
+                <Textarea
+                  placeholder="Masukkan deskripsi"
+                  {...field}
+                  rows={5}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

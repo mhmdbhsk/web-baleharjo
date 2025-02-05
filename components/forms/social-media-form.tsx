@@ -1,10 +1,8 @@
 'use client';
 
-import { toast } from 'sonner';
-import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
 import {
   Form,
   FormControl,
@@ -14,50 +12,49 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { SocialMedia } from '@/db/schema';
 
-export const formSchema = z.object({
-  instagram: z.string(),
-  twitter: z.string(),
-  facebook: z.string(),
-  youtube: z.string(),
+const formSchema = z.object({
+  platform: z.string().min(1, 'Platform harus diisi'),
+  url: z.string().url('URL tidak valid'),
+  icon: z.string().min(1, 'Icon harus diisi'),
 });
 
-export default function SocialMediaForm() {
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-  });
+export type SocialMediaFormValues = z.infer<typeof formSchema>;
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    try {
-      console.log(values);
-      toast(
-        <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-          <code className="text-white">{JSON.stringify(values, null, 2)}</code>
-        </pre>
-      );
-    } catch (error) {
-      console.error('Form submission error', error);
-      toast.error('Failed to submit the form. Please try again.');
-    }
-  }
+interface SocialMediaFormProps {
+  initialData?: SocialMedia | null;
+  onSubmit: (values: SocialMediaFormValues) => void;
+  isLoading?: boolean;
+}
+
+export function SocialMediaForm({
+  initialData,
+  onSubmit,
+  isLoading,
+}: SocialMediaFormProps) {
+  const form = useForm<SocialMediaFormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      platform: initialData?.platform || '',
+      url: initialData?.url || '',
+      icon: initialData?.icon || '',
+    },
+  });
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
-          name="instagram"
+          name="platform"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Instagram</FormLabel>
+              <FormLabel>Platform</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Masukkan tautan akun Instagram"
-                  type="text"
-                  {...field}
-                />
+                <Input placeholder="Masukkan nama platform" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -65,18 +62,13 @@ export default function SocialMediaForm() {
 
         <FormField
           control={form.control}
-          name="twitter"
+          name="url"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Twitter/X</FormLabel>
+              <FormLabel>URL</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Masukkan tautan akun Twitter/X"
-                  type="text"
-                  {...field}
-                />
+                <Input placeholder="Masukkan URL" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
@@ -84,42 +76,21 @@ export default function SocialMediaForm() {
 
         <FormField
           control={form.control}
-          name="facebook"
+          name="icon"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Facebook</FormLabel>
+              <FormLabel>Icon</FormLabel>
               <FormControl>
-                <Input
-                  placeholder="Masukkan tautan akun Facebook"
-                  type="text"
-                  {...field}
-                />
+                <Input placeholder="Masukkan nama icon" {...field} />
               </FormControl>
-
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="youtube"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>YouTube</FormLabel>
-              <FormControl>
-                <Input
-                  placeholder="Masukkan tautan akun YouTube"
-                  type="text"
-                  {...field}
-                />
-              </FormControl>
-
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" disabled={isLoading}>
+          {isLoading ? 'Menyimpan...' : 'Simpan'}
+        </Button>
       </form>
     </Form>
   );

@@ -3,7 +3,6 @@
 import { startTransition, use, useActionState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Loader2 } from 'lucide-react';
 import { useUser } from '@/lib/auth';
@@ -39,52 +38,48 @@ export default function GeneralPage() {
   return (
     <section>
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
-        General Settings
+        Pengaturan Umum
       </h1>
 
-      <span>Account Information</span>
-
-      <form className="space-y-4" onSubmit={handleSubmit}>
-        <div>
-          <Label htmlFor="name">Name</Label>
-          <Input
-            id="name"
-            name="name"
-            placeholder="Enter your name"
-            defaultValue={user?.name || ''}
-            required
-          />
-        </div>
-        <div>
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            placeholder="Enter your email"
-            defaultValue={user?.email || ''}
-            required
-          />
-        </div>
-        {state.error && <p className="text-red-500 text-sm">{state.error}</p>}
-        {state.success && (
-          <p className="text-green-500 text-sm">{state.success}</p>
-        )}
-        <Button
-          type="submit"
-          className="bg-orange-500 hover:bg-orange-600 text-white"
-          disabled={isPending}
-        >
-          {isPending ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Saving...
-            </>
-          ) : (
-            'Save Changes'
+      <div className="py-4">
+        <form className="space-y-4" onSubmit={handleSubmit}>
+          <div>
+            <Label htmlFor="name">Nama</Label>
+            <Input
+              id="name"
+              name="name"
+              placeholder="Masukkan nama anda"
+              defaultValue={user?.name || ''}
+              required
+            />
+          </div>
+          <div>
+            <Label htmlFor="email">Email</Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Masukkan email anda"
+              defaultValue={user?.email || ''}
+              required
+            />
+          </div>
+          {state.error && <p className="text-red-500 text-sm">{state.error}</p>}
+          {state.success && (
+            <p className="text-green-500 text-sm">{state.success}</p>
           )}
-        </Button>
-      </form>
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Menyimpan...
+              </>
+            ) : (
+              'Simpan'
+            )}
+          </Button>
+        </form>
+      </div>
     </section>
   );
 }

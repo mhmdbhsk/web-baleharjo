@@ -1,53 +1,55 @@
 import { SocialMedia } from '@/db/schema';
 
-export const getSocialMedia = async () => {
-  const response = await fetch(`/api/social-media`);
-
-  const data = await response.json();
-  return data;
-};
-
-export const getSocialMediaById = async (id: string) => {
-  const response = await fetch(`/api/social-media/${id}`);
-
-  const data = await response.json();
-  return data;
-};
-
-export const createSocialMedia = async (data: SocialMedia) => {
-  const response = await fetch(`/api/social-media`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-
-  const dataResponse = await response.json();
-  return dataResponse;
+interface GetSocialMediaParams {
+  page?: number;
+  limit?: number;
+  search?: string;
 }
 
-export const updateSocialMedia = async (id: string, data: Partial<SocialMedia>) => {
-  const response = await fetch(`/api/social-media/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
+interface SocialMediaResponse {
+  data: SocialMedia[];
+  metadata: {
+    totalPages: number;
+    totalItems: number;
+  };
+}
+
+export async function getSocialMedia({
+  page = 1,
+  limit = 10,
+  search = '',
+}: GetSocialMediaParams = {}): Promise<SocialMediaResponse> {
+  const response = await fetch(
+    `/api/social-media?page=${page}&limit=${limit}&search=${search}`
+  );
+  return response.json();
+}
+
+export async function createSocialMedia(data: Partial<SocialMedia>) {
+  const response = await fetch('/api/social-media', {
+    method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify(data),
   });
+  return response.json();
+}
 
-  const dataResponse = await response.json();
-  return dataResponse;
-};
+export async function updateSocialMedia(id: string, data: Partial<SocialMedia>) {
+  const response = await fetch(`/api/social-media/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+  });
+  return response.json();
+}
 
-export const deleteSocialMedia = async (id: string) => {
+export async function deleteSocialMedia(id: string) {
   const response = await fetch(`/api/social-media/${id}`, {
     method: 'DELETE',
-    headers: {
-      'Content-Type': 'application/json',
-    },
   });
-
-  const dataResponse = await response.json();
-  return dataResponse;
-};
+  return response.json();
+}

@@ -127,7 +127,7 @@ export const updatePassword = validatedActionWithUser(
       logActivity(user.id, ActivityType.UPDATE_PASSWORD),
     ]);
 
-    return { success: 'Password updated successfully.' };
+    return { success: 'Kata sandi berhasil diubah' };
   },
 );
 
