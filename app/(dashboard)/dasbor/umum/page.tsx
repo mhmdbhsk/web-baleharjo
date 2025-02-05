@@ -38,7 +38,7 @@ export default function GeneralPage() {
 
   return (
     <section>
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+      <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
         General Settings
       </h1>
 

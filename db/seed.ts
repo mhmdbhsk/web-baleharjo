@@ -1,5 +1,5 @@
 import { db } from './drizzle';
-import { profile, socialMedia, users } from './schema';
+import { profile, users } from './schema';
 import { hashPassword } from '@/lib/auth/session';
 
 async function createAccout() {
@@ -14,7 +14,7 @@ async function createAccout() {
         name: 'Admin',
         email: email,
         passwordHash: passwordHash,
-        role: "admin",
+        role: "ADMIN",
       },
     ])
     .returning();
@@ -42,25 +42,8 @@ async function createProfile() {
 
 
 async function seed() {
-  createAccout()
-    .catch((error) => {
-      console.error('❌ Seed process failed:', error);
-      process.exit(1);
-    })
-    .finally(() => {
-      console.log('🤵‍♂️ Initialize account');
-      process.exit(0);
-    });
-
-  createProfile()
-    .catch((error) => {
-      console.error('❌ Seed process failed:', error);
-      process.exit(1);
-    })
-    .finally(() => {
-      console.log('🪪 Initialize profile');
-      process.exit(0);
-    });
+  await createAccout();
+  await createProfile();
 }
 
 seed()

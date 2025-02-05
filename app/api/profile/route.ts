@@ -27,7 +27,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || currentUser.role !== 'ADMIN') {
       return NextResponse.json({
         message: 'Unauthorized access',
         error: 'Only administrators can modify profile'

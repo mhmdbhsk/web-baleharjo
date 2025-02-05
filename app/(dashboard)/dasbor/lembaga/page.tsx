@@ -6,7 +6,7 @@ export default async function InstitutionalPage() {
     <section>
       <div className="flex w-full justify-between items-center mb-8">
         <div className="flex items-center">
-          <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+          <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
             Lembaga
           </h1>
         </div>

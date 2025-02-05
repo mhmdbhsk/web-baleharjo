@@ -3,11 +3,12 @@ import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
 import { desc, sql, isNull } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
+import { hashPassword } from '@/lib/auth/session';
 
 export async function GET(request: NextRequest) {
   try {
     const currentUser = await getCurrentUser();
-    if (!currentUser || currentUser.role !== 'admin') {
+    if (!currentUser || currentUser.role !== 'ADMIN') {
       return NextResponse.json({
         message: 'Unauthorized access',
         error: 'Unauthorized'
@@ -61,25 +62,29 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    const currentUser = await getCurrentUser();
-    if (!currentUser || currentUser.role !== 'admin') {
-      return NextResponse.json({
-        message: 'Unauthorized access',
-        error: 'Unauthorized'
-      }, { status: 401 });
-    }
-
     const body = await request.json();
-    const result = await db.insert(users).values(body);
 
-    return NextResponse.json({
-      message: 'User created successfully',
-      data: result
-    }, { status: 201 });
+    // Hash password if provided
+    const passwordHash = body.password ? await hashPassword(body.password) : undefined;
+
+    const user = await db
+      .insert(users)
+      .values({
+        name: body.name,
+        email: body.email,
+        role: body.role,
+        passwordHash: passwordHash!, // Now required
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    return NextResponse.json(user[0]);
   } catch (error) {
-    return NextResponse.json({
-      message: 'Failed to create user',
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    }, { status: 500 });
+    console.error('Error creating user:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

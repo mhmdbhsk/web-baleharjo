@@ -33,9 +33,7 @@ export default function ProfilePage() {
 
   return (
     <section>
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
-        Profil
-      </h1>
+      <h1 className="text-lg lg:text-2xl font-medium text-gray-900">Profil</h1>
 
       <ProfileForm
         initialValues={{

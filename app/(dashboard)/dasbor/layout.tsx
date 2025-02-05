@@ -186,7 +186,7 @@ export default function DashboardLayout({
           </nav>
         </aside>
 
-        <main className="flex-1 w-full lg:w-[calc(100%-16rem)] min-h-[calc(100vh-78px)] p-10 pt-[86px] lg:pt-8">
+        <main className="flex-1 w-full lg:w-[calc(100%-16rem)] min-h-[calc(100vh-78px)] p-10 px-4 pt-[86px] lg:pt-8 lg:px-12">
           {children}
         </main>
       </div>

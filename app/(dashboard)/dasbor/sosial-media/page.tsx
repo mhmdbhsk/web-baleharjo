@@ -60,7 +60,7 @@ export default function SocialMediaPage() {
 
   return (
     <section>
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+      <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
         Sosial Media
       </h1>
     </section>

@@ -84,6 +84,32 @@ export async function PUT(
   }
 }
 
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const body = await request.json();
+
+    const user = await db
+      .update(users)
+      .set({
+        ...body,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, params.id))
+      .returning();
+
+    return NextResponse.json(user[0]);
+  } catch (error) {
+    console.error('Error updating user:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(
   request: NextRequest,
   { params }: { params: { id: string } }

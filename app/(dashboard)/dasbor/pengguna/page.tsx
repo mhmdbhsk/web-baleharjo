@@ -24,47 +24,117 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { PenggunaForm } from '@/components/forms/pengguna-form';
 import { toast } from 'sonner';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
+import {
+  createPengguna,
+  deletePengguna,
+  getPengguna,
+  updatePengguna,
+} from '@/services/pengguna.services';
+import { User } from '@/db/schema';
+import { formatDate } from '@/lib/utils';
+import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
+import BlurHashImage from '@/components/blurhash-image';
+import { PenggunaDto } from '@/types/dto/users.dto';
 
-interface Pengguna {
-  id: string;
-  title: string;
-  description: string;
-  date: string;
-  location: string;
-}
-
-export default async function PenggunaPage() {
-  const [selectedPengguna, setSelectedPengguna] = useState<Pengguna | null>(
-    null
-  );
+export default function PenggunaPage() {
+  const [selectedPengguna, setSelectedPengguna] = useState<User | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [pageSize, setPageSize] = useState(10);
+  const [search, setSearch] = useState('');
 
-  const columns: ColumnDef<Pengguna>[] = [
+  const {
+    data,
+    isLoading: isLoadingData,
+    refetch,
+  } = useQuery({
+    queryKey: ['users', pageIndex, pageSize, search],
+    queryFn: () =>
+      getPengguna({
+        page: pageIndex + 1,
+        limit: pageSize,
+        search,
+      }),
+  });
+
+  const { mutate: create, isPending: isCreating } = useMutation({
+    mutationFn: async (values: PenggunaDto) => {
+      return createPengguna({
+        name: values.name,
+        email: values.email,
+        role: values.role,
+        password: values.password,
+      });
+    },
+    onSuccess: () => {
+      refetch();
+      setIsAddOpen(false);
+      toast.success('Pengguna berhasil ditambahkan');
+    },
+    onError: (error) => {
+      console.log(error);
+      toast.error('Gagal menambahkan pengguna');
+    },
+  });
+
+  const { mutate: update, isPending: isUpdating } = useMutation({
+    mutationFn: async ({
+      id,
+      values,
+    }: {
+      id: string;
+      values: Partial<PenggunaDto>;
+    }) => {
+      return updatePengguna(id, values);
+    },
+    onSuccess: () => {
+      refetch();
+      setIsEditOpen(false);
+      toast.success('Pengguna berhasil diperbarui');
+    },
+    onError: () => {
+      toast.error('Gagal memperbarui pengguna');
+    },
+  });
+
+  const { mutate: del, isPending: isDeleting } = useMutation({
+    mutationFn: (id: string) => deletePengguna(id),
+    onSuccess: () => {
+      refetch();
+      setIsDeleteOpen(false);
+      toast.success('Pengguna berhasil dihapus');
+    },
+    onError: () => {
+      toast.error('Gagal menghapus pengguna');
+    },
+  });
+
+  const columns: ColumnDef<User>[] = [
     {
-      accessorKey: 'title',
+      accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Title" />
+        <DataTableColumnHeader column={column} title="Nama" />
       ),
     },
     {
-      accessorKey: 'date',
+      accessorKey: 'email',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Date" />
+        <DataTableColumnHeader column={column} title="Email" />
       ),
     },
     {
-      accessorKey: 'location',
+      accessorKey: 'role',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Location" />
+        <DataTableColumnHeader column={column} title="Jabatan" />
       ),
     },
-    createActionColumn<Pengguna>({
+    createActionColumn<User>({
       onView: (data) => {
         setSelectedPengguna(data);
         setIsViewOpen(true);
@@ -80,51 +150,9 @@ export default async function PenggunaPage() {
     }),
   ];
 
-  const handleAdd = async (values: any) => {
-    try {
-      setIsLoading(true);
-
-      // await createActivity(values);
-
-      toast.success('Pengguna berhasil ditambahkan');
-
-      setIsAddOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleEdit = async (values: any) => {
-    try {
-      setIsLoading(true);
-      // Add your API call here
-      console.log('Editing:', values);
-      setIsEditOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    try {
-      setIsLoading(true);
-      // Add your API call here
-      console.log('Deleting:', selectedPengguna?.id);
-      setIsDeleteOpen(false);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return (
     <section>
-      <div className="flex w-full justify-between items-center mb-8">
+      <div className="flex w-full justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
             Pengguna
@@ -133,13 +161,25 @@ export default async function PenggunaPage() {
 
         <div>
           <Button size="sm" onClick={() => setIsAddOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="h-4 w-4" />
             Tambah Pengguna
           </Button>
         </div>
       </div>
 
-      <DataTable columns={columns} data={[]} searchKey="title" />
+      <DataTable
+        columns={columns}
+        data={data?.data || []}
+        searchKey="name"
+        isLoading={isLoadingData}
+        pageCount={data?.metadata?.totalPages || 1}
+        pageSize={pageSize}
+        pageIndex={pageIndex}
+        onPageChange={setPageIndex}
+        onPageSizeChange={setPageSize}
+        onSearch={setSearch}
+        searchValue={search}
+      />
 
       {/* Add Dialog */}
       <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
@@ -147,10 +187,13 @@ export default async function PenggunaPage() {
           <DialogHeader>
             <DialogTitle>Buat Pengguna Baru</DialogTitle>
             <DialogDescription>
-              Isi formulir kegiatan baru di bawah ini.
+              Isi formulir pengguna baru di bawah ini.
             </DialogDescription>
           </DialogHeader>
-          {/* <PenggunaForm onSubmit={handleAdd} isLoading={isLoading} /> */}
+          <PenggunaForm
+            onSubmit={(values) => create({ ...values, password: 'default123' })}
+            isLoading={isCreating}
+          />
         </DialogContent>
       </Dialog>
 
@@ -160,14 +203,17 @@ export default async function PenggunaPage() {
           <DialogHeader>
             <DialogTitle>Ubah Pengguna</DialogTitle>
             <DialogDescription>
-              Ubah informasi kegiatan di bawah ini.
+              Ubah informasi pengguna di bawah ini.
             </DialogDescription>
           </DialogHeader>
-          {/* <PenggunaForm
+          <PenggunaForm
             initialData={selectedPengguna}
-            onSubmit={handleEdit}
-            isLoading={isLoading}
-          /> */}
+            onSubmit={(values) =>
+              selectedPengguna?.id &&
+              update({ id: selectedPengguna.id, values })
+            }
+            isLoading={isUpdating}
+          />
         </DialogContent>
       </Dialog>
 
@@ -175,24 +221,20 @@ export default async function PenggunaPage() {
       <Dialog open={isViewOpen} onOpenChange={setIsViewOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Pengguna Details</DialogTitle>
+            <DialogTitle>Detail Pengguna</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <div>
-              <h3 className="font-medium">Title</h3>
-              <p>{selectedPengguna?.title}</p>
+              <h3 className="font-medium">Nama</h3>
+              <p>{selectedPengguna?.name}</p>
             </div>
             <div>
-              <h3 className="font-medium">Description</h3>
-              <p>{selectedPengguna?.description}</p>
+              <h3 className="font-medium">Email</h3>
+              <p>{selectedPengguna?.email}</p>
             </div>
             <div>
-              <h3 className="font-medium">Date</h3>
-              <p>{selectedPengguna?.date}</p>
-            </div>
-            <div>
-              <h3 className="font-medium">Location</h3>
-              <p>{selectedPengguna?.location}</p>
+              <h3 className="font-medium">Role</h3>
+              <p>{selectedPengguna?.role}</p>
             </div>
           </div>
         </DialogContent>
@@ -202,20 +244,20 @@ export default async function PenggunaPage() {
       <AlertDialog open={isDeleteOpen} onOpenChange={setIsDeleteOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+            <AlertDialogTitle>Apakah anda yakin?</AlertDialogTitle>
             <AlertDialogDescription>
-              This action cannot be undone. This will permanently delete the
-              kegiatan.
+              Tindakan ini tidak dapat dibatalkan. Pengguna akan dihapus secara
+              permanen.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogCancel>Batal</AlertDialogCancel>
             <AlertDialogAction
-              onClick={handleDelete}
-              disabled={isLoading}
+              onClick={() => selectedPengguna?.id && del(selectedPengguna.id)}
+              disabled={isDeleting}
               className="bg-red-600 hover:bg-red-700"
             >
-              Delete
+              Hapus
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

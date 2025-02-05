@@ -6,7 +6,7 @@ export default async function BlogPage() {
   return (
     <section>
       <div className="flex justify-between items-center">
-        <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
+        <h1 className="text-lg lg:text-2xl font-medium text-gray-900">
           Berita
         </h1>
 
