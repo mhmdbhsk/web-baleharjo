@@ -1,6 +1,5 @@
 'use client';
 
-import SocialMediaForm from '@/components/forms/social-media-form';
 import { SocialMedia } from '@/db/schema';
 import {
   createSocialMedia,
@@ -11,7 +10,7 @@ import {
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
-export default async function SocialMediaPage() {
+export default function SocialMediaPage() {
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['social-media'],
     queryFn: getSocialMedia,

@@ -26,7 +26,7 @@ export default async function EditBlogPostPage({
   }
 
   return (
-    <section className="p-4 lg:p-8">
+    <section>
       <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
         Edit Post
       </h1>

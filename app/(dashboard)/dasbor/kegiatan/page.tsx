@@ -35,10 +35,8 @@ import {
 } from '@/services/activity.services';
 import { Activity } from '@/db/schema';
 import { formatDate } from '@/lib/utils';
-import { useCallback } from 'react';
-import { generateBlurHash } from '@/lib/generate-blurhash';
-import { useUploadThing } from '@/lib/uploadthing';
 import { useCloudinaryUpload } from '@/hooks/use-cloudinary-upload';
+import BlurHashImage from '@/components/blurhash-image';
 
 export default function KegiatanPage() {
   const [selectedKegiatan, setSelectedKegiatan] = useState<Activity | null>(
@@ -51,9 +49,6 @@ export default function KegiatanPage() {
   const [pageIndex, setPageIndex] = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState('');
-  const [file, setFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [blurhash, setBlurhash] = useState<string | null>(null);
   const { uploadImage, isLoading, error } = useCloudinaryUpload();
 
   const {
@@ -72,34 +67,17 @@ export default function KegiatanPage() {
 
   const { mutate: create, isPending: isCreating } = useMutation({
     mutationFn: async (values: ActivityDto) => {
-      if (values.image) {
-        try {
-          const { url, blurhash } = await uploadImage(values.image as File);
-          setImageUrl(url);
-          setBlurhash(blurhash);
-          console.log(url, blurhash);
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      const { url, blurhash } = await uploadImage(values.image as File);
 
-      const data = {
-        title: values.title,
-        date: values.date,
-        description: values.description,
-        location: values.location,
-        image: imageUrl || null,
-        blurhash: blurhash || null,
-      };
-      console.log(data);
+      console.log(url, blurhash);
 
       return createActivity({
         title: values.title,
         date: values.date,
         description: values.description,
         location: values.location,
-        image: imageUrl || null,
-        blurhash: blurhash || null,
+        image: url,
+        blurhash: blurhash,
       });
     },
     onSuccess: () => {
@@ -121,25 +99,13 @@ export default function KegiatanPage() {
       id: string;
       values: Partial<ActivityDto> & { image?: File };
     }) => {
-      if (values.image) {
-        try {
-          const { url, blurhash } = await uploadImage(values.image!);
-          setImageUrl(url);
-          setBlurhash(blurhash);
+      const { url, blurhash } = await uploadImage(values.image as File);
 
-          return updateActivity(id, {
-            ...values,
-            image: url,
-            blurhash: blurhash,
-          });
-        } catch (err) {
-          console.error(err);
-        }
-      }
+      console.log(url, blurhash);
 
       return updateActivity(id, {
         ...values,
-        image: imageUrl,
+        image: url,
         blurhash: blurhash,
       });
     },
@@ -275,6 +241,14 @@ export default function KegiatanPage() {
             <DialogTitle>Detail Kegiatan</DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
+            {selectedKegiatan?.image && (
+              <BlurHashImage
+                src={selectedKegiatan.image}
+                alt={selectedKegiatan.title}
+                blurhash={selectedKegiatan.blurhash || ''}
+                rounded
+              />
+            )}
             <div>
               <h3 className="font-medium">Judul</h3>
               <p>{selectedKegiatan?.title}</p>

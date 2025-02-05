@@ -4,7 +4,7 @@ import Link from 'next/link';
 
 export default async function BlogPage() {
   return (
-    <section className="p-4 lg:p-8">
+    <section>
       <div className="flex justify-between items-center">
         <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-6">
           Berita

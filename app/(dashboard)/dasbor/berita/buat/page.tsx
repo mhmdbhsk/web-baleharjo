@@ -72,7 +72,7 @@ export default function CreateBlogPost() {
   // }
 
   return (
-    <section className="p-4 lg:p-8">
+    <section>
       <div>
         <Link href="/dasbor/berita" passHref>
           <Button variant="outline" className="text-sm flex w-max items-center">
