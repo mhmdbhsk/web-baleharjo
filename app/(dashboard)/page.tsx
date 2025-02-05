@@ -1,37 +1,24 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, CreditCard, Database } from 'lucide-react';
-import { Terminal } from './terminal';
+import { ArrowRight, Database } from 'lucide-react';
+import { getAllBlogPosts } from '@/lib/db/actions/blog';
+import UnderlineLink from '@/components/underlined-link';
 
-export default function HomePage() {
+export default async function HomePage() {
+  const posts = await getAllBlogPosts();
+
   return (
     <main>
       <section className="py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="lg:grid lg:grid-cols-12 lg:gap-8">
-            <div className="sm:text-center md:max-w-2xl md:mx-auto lg:col-span-6 lg:text-left">
+            <div className="sm:text-center max-w-2xl mx-auto lg:col-span-6 lg:text-left">
               <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
-                Build Your SaaS
-                <span className="block text-orange-500">Faster Than Ever</span>
+                Selamat Datang di Kelurahan
+                <span className="block text-orange-500">Baleharjo</span>
               </h1>
-              <p className="mt-3 text-base text-gray-500 sm:mt-5 sm:text-xl lg:text-lg xl:text-xl">
-                Launch your SaaS product in record time with our powerful,
-                ready-to-use template. Packed with modern technologies and
-                essential integrations.
-              </p>
               <div className="mt-8 sm:max-w-lg sm:mx-auto sm:text-center lg:text-left lg:mx-0">
-                <a
-                  href="https://vercel.com/templates/next.js/next-js-saas-starter"
-                  target="_blank"
-                >
-                  <Button className="bg-white hover:bg-gray-100 text-black border border-gray-200 rounded-full text-lg px-8 py-4 inline-flex items-center justify-center">
-                    Deploy your own
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Button>
-                </a>
+                <UnderlineLink href="/dasbor">Masuk ke Dasbor</UnderlineLink>
               </div>
-            </div>
-            <div className="mt-12 relative sm:max-w-lg sm:mx-auto lg:mt-0 lg:max-w-none lg:mx-0 lg:col-span-6 lg:flex lg:items-center">
-              <Terminal />
             </div>
           </div>
         </div>
@@ -74,21 +61,6 @@ export default function HomePage() {
                 </p>
               </div>
             </div>
-
-            <div className="mt-10 lg:mt-0">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-orange-500 text-white">
-                <CreditCard className="h-6 w-6" />
-              </div>
-              <div className="mt-5">
-                <h2 className="text-lg font-medium text-gray-900">
-                  Stripe Integration
-                </h2>
-                <p className="mt-2 text-base text-gray-500">
-                  Seamless payment processing and subscription management with
-                  industry-leading Stripe integration.
-                </p>
-              </div>
-            </div>
           </div>
         </div>
       </section>
@@ -111,13 +83,33 @@ export default function HomePage() {
                 href="https://github.com/nextjs/saas-starter"
                 target="_blank"
               >
-                <Button className="bg-white hover:bg-gray-100 text-black border border-gray-200 rounded-full text-xl px-12 py-6 inline-flex items-center justify-center">
+                <Button className="bg-white hover:bg-gray-100 text-black border border-gray-200  text-xl px-12 py-6 inline-flex items-center justify-center">
                   View the code
                   <ArrowRight className="ml-3 h-6 w-6" />
                 </Button>
               </a>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section className="py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <h1 className="text-4xl font-bold text-gray-900 tracking-tight sm:text-5xl md:text-6xl">
+            Welcome to Our Blog
+          </h1>
+          <ul className="space-y-4 mt-8">
+            {posts.map((post) => (
+              <li key={post.id} className="border-b pb-4">
+                <h2 className="text-xl font-bold">{post.title}</h2>
+                <p className="text-sm text-gray-500">
+                  By {post.authorName} on{' '}
+                  {new Date(post.createdAt).toLocaleDateString()}
+                </p>
+                <p className="mt-2">{post.content}</p>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </main>

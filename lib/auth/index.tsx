@@ -2,6 +2,7 @@
 
 import { createContext, useContext, ReactNode } from 'react';
 import { User } from '@/lib/db/schema';
+import { Toaster } from 'sonner';
 
 type UserContextType = {
   userPromise: Promise<User | null>;
@@ -27,6 +28,8 @@ export function UserProvider({
   return (
     <UserContext.Provider value={{ userPromise }}>
       {children}
+
+      <Toaster />
     </UserContext.Provider>
   );
 }
