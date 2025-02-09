@@ -7,9 +7,11 @@ export async function GET(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = await params
+
   try {
     const data = await db.query.rw.findFirst({
-      where: eq(rw.id, params.id),
+      where: eq(rw.id, id),
       with: {
         user: true,
         rts: {

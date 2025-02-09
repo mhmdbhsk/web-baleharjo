@@ -6,7 +6,7 @@ import { RTManagement } from '@/components/wilayah/rt-management';
 
 export default function WilayahPage() {
   return (
-    <div className="container mx-auto py-6 space-y-6">
+    <div className="container mx-auto w-full space-y-6">
       <div className="flex w-full justify-between items-center">
         <div className="flex items-center">
           <h1 className="text-lg lg:text-2xl font-medium text-gray-900">

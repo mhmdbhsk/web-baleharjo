@@ -44,6 +44,14 @@ export function DocumentRequestForm({
 }: DocumentRequestFormProps) {
   const form = useForm<DocumentRequestFormValues>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      type: '',
+      name: '',
+      nik: '',
+      address: '',
+      purpose: '',
+      description: '',
+    },
   });
 
   return (
@@ -65,7 +73,9 @@ export function DocumentRequestForm({
                   <SelectItem value="SKCK">Surat Pengantar SKCK</SelectItem>
                   <SelectItem value="KTP">Surat Pengantar KTP</SelectItem>
                   <SelectItem value="KK">Surat Pengantar KK</SelectItem>
-                  <SelectItem value="DOMISILI">Surat Keterangan Domisili</SelectItem>
+                  <SelectItem value="DOMISILI">
+                    Surat Keterangan Domisili
+                  </SelectItem>
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -122,7 +132,10 @@ export function DocumentRequestForm({
             <FormItem>
               <FormLabel>Tujuan</FormLabel>
               <FormControl>
-                <Input placeholder="Masukkan tujuan pembuatan surat" {...field} />
+                <Input
+                  placeholder="Masukkan tujuan pembuatan surat"
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>

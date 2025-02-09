@@ -6,17 +6,15 @@ import { DataTable } from '@/components/data-table/data-table';
 import { createActionColumn } from '@/components/data-table/columns';
 import { ColumnDef } from '@tanstack/react-table';
 import { DataTableColumnHeader } from '@/components/data-table/sort-header';
-import { use, useState } from 'react';
+import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { DocumentRequestForm } from '@/components/forms/document-request-form';
 import { DocumentReviewForm } from '@/components/forms/document-review-form';
 import { toast } from 'sonner';
 import { useMutation, useQuery } from '@tanstack/react-query';
@@ -32,8 +30,9 @@ import {
   reviewDocumentRequest,
   generateDocument,
 } from '@/services/document.services';
-import { useUser } from '@/lib/auth';
 import { useCurrentUser } from '@/hooks/use-current-user';
+import Link from 'next/link';
+import { DocumentType } from '@/db/schema';
 
 export default function DocumentRequestPage() {
   const { user, isLoading: isLoadingUser } = useCurrentUser();
@@ -69,18 +68,6 @@ export default function DocumentRequestPage() {
         limit: pageSize,
         search,
       }),
-  });
-
-  const { mutate: create, isPending: isCreating } = useMutation({
-    mutationFn: createDocumentRequest,
-    onSuccess: () => {
-      refetchRequests();
-      setIsAddOpen(false);
-      toast.success('Permohonan berhasil diajukan');
-    },
-    onError: () => {
-      toast.error('Gagal mengajukan permohonan');
-    },
   });
 
   const { mutate: review, isPending: isReviewing } = useMutation({
@@ -140,6 +127,7 @@ export default function DocumentRequestPage() {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Jenis Surat" />
       ),
+      cell: ({ row }) => renderName(row.getValue('type')),
     },
     {
       accessorKey: 'name',
@@ -174,6 +162,7 @@ export default function DocumentRequestPage() {
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Jenis Surat" />
       ),
+      cell: ({ row }) => renderName(row.getValue('type')),
     },
     {
       accessorKey: 'name',
@@ -221,6 +210,17 @@ export default function DocumentRequestPage() {
     return false;
   };
 
+  const renderName = (type: DocumentType) => {
+    switch (type) {
+      case DocumentType.LETTER_STATEMENT:
+        return 'Surat Keterangan';
+      case DocumentType.BUSINESS_LETTER:
+        return 'Surat Keterangan Usaha';
+      case DocumentType.LAND_APPRAISAL:
+        return 'Surat Taksir Harga Tanah';
+    }
+  };
+
   return (
     <section className="space-y-6">
       <div className="flex w-full justify-between items-center">
@@ -231,10 +231,12 @@ export default function DocumentRequestPage() {
         </div>
 
         <div>
-          <Button size="sm" onClick={() => setIsAddOpen(true)}>
-            <Plus className="h-4 w-4" />
-            Buat Permohonan
-          </Button>
+          <Link href="/dasbor/surat/buat">
+            <Button size="sm">
+              <Plus className="h-4 w-4" />
+              Buat Permohonan
+            </Button>
+          </Link>
         </div>
       </div>
 
@@ -275,21 +277,6 @@ export default function DocumentRequestPage() {
         </TabsContent>
       </Tabs>
 
-      <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Buat Permohonan Surat</DialogTitle>
-            <DialogDescription>
-              Isi formulir permohonan surat di bawah ini.
-            </DialogDescription>
-          </DialogHeader>
-          <DocumentRequestForm
-            onSubmit={(values) => create(values as DocumentRequest)}
-            isLoading={isCreating}
-          />
-        </DialogContent>
-      </Dialog>
-
       <Dialog open={isReviewOpen} onOpenChange={setIsReviewOpen}>
         <DialogContent>
           <DialogHeader>
@@ -298,7 +285,9 @@ export default function DocumentRequestPage() {
           <div className="space-y-4">
             <div>
               <h3 className="font-medium">Jenis Surat</h3>
-              <p>{selectedDocument?.type}</p>
+              <p>
+                {renderName(selectedDocument?.type as unknown as DocumentType)}
+              </p>
             </div>
             <div>
               <h3 className="font-medium">Nama</h3>

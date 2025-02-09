@@ -32,7 +32,7 @@ export function Steps({ steps, activeStep, onStepClick }: StepsProps) {
         />
       </div>
 
-      <ol className="relative flex w-full justify-between">
+      <ol className="relative flex w-full justify-around">
         {steps.map((step, index) => {
           const isCompleted = index < activeStep;
           const isCurrent = index === activeStep;
@@ -76,7 +76,7 @@ export function Steps({ steps, activeStep, onStepClick }: StepsProps) {
                 >
                   {step.title}
                 </span>
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-gray-500 text-center">
                   {step.description}
                 </span>
               </div>

@@ -1,9 +1,16 @@
-import { Potential } from '@/db/schema';
 
 interface GetPotentialParams {
   page?: number;
   limit?: number;
   search?: string;
+}
+
+interface Potential {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  blurhash: string;
 }
 
 interface PotentialResponse {
@@ -20,13 +27,13 @@ export async function getPotentials({
   search = '',
 }: GetPotentialParams = {}): Promise<PotentialResponse> {
   const response = await fetch(
-    `/api/potentials?page=${page}&limit=${limit}&search=${search}`
+    `/api/potential?page=${page}&limit=${limit}&search=${search}`
   );
   return response.json();
 }
 
 export async function createPotential(data: Partial<Potential>) {
-  const response = await fetch('/api/potentials', {
+  const response = await fetch('/api/potential', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -37,7 +44,7 @@ export async function createPotential(data: Partial<Potential>) {
 }
 
 export async function updatePotential(id: string, data: Partial<Potential>) {
-  const response = await fetch(`/api/potentials/${id}`, {
+  const response = await fetch(`/api/potential/${id}`, {
     method: 'PATCH',
     headers: {
       'Content-Type': 'application/json',
@@ -48,7 +55,7 @@ export async function updatePotential(id: string, data: Partial<Potential>) {
 }
 
 export async function deletePotential(id: string) {
-  const response = await fetch(`/api/potentials/${id}`, {
+  const response = await fetch(`/api/potential/${id}`, {
     method: 'DELETE',
   });
   return response.json();

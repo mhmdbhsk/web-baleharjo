@@ -1,60 +1,67 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/db/drizzle';
+
 import { potential } from '@/db/schema';
-import { desc, sql } from 'drizzle-orm';
-import { ApiResponse } from '@/types/api';
+import { desc, eq, like, sql } from 'drizzle-orm';
+import { db } from '@/db/drizzle';
 
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
+    const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
+    const search = searchParams.get('search') || '';
+
     const offset = (page - 1) * limit;
 
-    const [potentials, totalCount] = await Promise.all([
+    const [data, total] = await Promise.all([
       db
         .select()
         .from(potential)
-        .orderBy(desc(potential.createdAt))
+        .where(like(potential.title, `%${search}%`))
         .limit(limit)
-        .offset(offset),
+        .offset(offset)
+        .orderBy(desc(potential.createdAt)),
       db
         .select({ count: sql<number>`count(*)` })
         .from(potential)
-        .then(res => Number(res[0].count))
+        .where(like(potential.title, `%${search}%`)),
     ]);
 
     return NextResponse.json({
-      message: 'Potentials fetched successfully',
-      data: potentials,
+      data,
       metadata: {
-        page,
-        limit,
-        total: totalCount,
-        totalPages: Math.ceil(totalCount / limit)
-      }
+        totalItems: total[0].count,
+        totalPages: Math.ceil(total[0].count / limit),
+      },
     });
   } catch (error) {
-    return NextResponse.json({
-      message: 'Failed to fetch potentials',
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    }, { status: 500 });
+    console.error('Error fetching potentials:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const result = await db.insert(potential).values(body);
 
-    return NextResponse.json({
-      message: 'Potential created successfully',
-      data: result
-    }, { status: 201 });
+    const newPotential = await db
+      .insert(potential)
+      .values({
+        ...body,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      })
+      .returning();
+
+    return NextResponse.json(newPotential[0]);
   } catch (error) {
-    return NextResponse.json({
-      message: 'Failed to create potential',
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
-    }, { status: 500 });
+    console.error('Error creating potential:', error);
+    return NextResponse.json(
+      { error: 'Internal Server Error' },
+      { status: 500 }
+    );
   }
 }

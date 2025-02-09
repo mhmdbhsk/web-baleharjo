@@ -20,6 +20,7 @@ import {
   FileStack,
   Gauge,
   Map,
+  Users2,
 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -97,6 +98,12 @@ export default function DashboardLayout({
       icon: Shield,
       label: 'Kemananan',
       subgroup: 'Akun',
+    },
+    {
+      href: '/dasbor/buku-tamu',
+      icon: Users2,
+      label: 'Buku Tamu',
+      subgroup: 'Manajemen',
     },
     {
       href: '/dasbor/surat',

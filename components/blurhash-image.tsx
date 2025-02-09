@@ -1,56 +1,77 @@
 'use client';
 
+import { cn } from '@/lib/utils';
+import { Blurhash } from 'react-blurhash';
 import Image from 'next/image';
 import { useState } from 'react';
-import { Blurhash } from 'react-blurhash';
 
-type BlurHashImageProps = {
+interface BlurHashImageProps {
+  src: string;
+  alt: string;
   blurhash: string;
-  rounded?: boolean | string;
+  className?: string;
+  aspectRatio?: 'square' | 'video' | 'portrait' | 'wide' | 'auto';
+  rounded?: boolean;
+  fill?: boolean;
   width?: number;
   height?: number;
-} & {
-  [key: string]: any;
-};
+}
 
 export default function BlurHashImage({
+  src,
+  alt,
   blurhash,
+  className,
+  aspectRatio = 'auto',
   rounded = false,
-  width = 600,
-  height = 340,
-  ...props
+  fill = true,
+  width,
+  height,
 }: BlurHashImageProps) {
-  if (typeof rounded === 'string') rounded = rounded === 'true';
-
   const [isLoaded, setIsLoaded] = useState(false);
+
+  const aspectRatioClasses = {
+    square: 'aspect-square',
+    video: 'aspect-video',
+    portrait: 'aspect-[3/4]',
+    wide: 'aspect-[16/9]',
+    auto: '',
+  };
 
   return (
     <div
-      className={`relative w-full h-auto aspect-video overflow-hidden ${rounded ? 'md:rounded-lg' : ''}`}
+      className={cn(
+        'relative overflow-hidden',
+        aspectRatioClasses[aspectRatio],
+        rounded && 'rounded-lg',
+        className
+      )}
     >
-      <Blurhash
-        hash={blurhash}
-        width="100%"
-        height="auto"
-        resolutionX={32}
-        resolutionY={32}
-        punch={1}
-        className={`absolute top-0 left-0 z-10 w-full h-auto aspect-video ${rounded ? 'md:rounded-lg' : ''}`}
+      {!isLoaded && (
+        <div className="absolute inset-0">
+          <Blurhash
+            hash={blurhash}
+            width="100%"
+            height="100%"
+            resolutionX={32}
+            resolutionY={32}
+            punch={1}
+          />
+        </div>
+      )}
+      <Image
+        src={src}
+        alt={alt}
+        className={cn(
+          'duration-700 ease-in-out',
+          isLoaded ? 'scale-100 blur-0' : 'scale-110 blur-lg',
+          fill ? 'object-cover' : 'object-contain'
+        )}
+        onLoadingComplete={() => setIsLoaded(true)}
+        fill={fill}
+        width={!fill ? width : undefined}
+        height={!fill ? height : undefined}
       />
-      <div
-        className={`absolute top-0 left-0 z-20 w-full h-auto aspect-video transition-opacity duration-1000 ${isLoaded ? 'opacity-100 delay-1000' : 'opacity-0'} ${rounded ? 'md:rounded-lg' : ''}`}
-      >
-        <Image
-          src={props.src}
-          alt={props.alt || ''}
-          onLoadingComplete={() => setIsLoaded(true)}
-          width={width}
-          height={height}
-          className={`absolute top-0 left-0 select-none object-cover w-full h-auto aspect-video ${rounded ? 'md:rounded-lg' : ''}`}
-          draggable="false"
-          {...props}
-        />
-      </div>
     </div>
   );
 }

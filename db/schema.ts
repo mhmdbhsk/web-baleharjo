@@ -4,7 +4,7 @@ import {
   text,
   timestamp,
 } from 'drizzle-orm/pg-core';
-import { relations } from 'drizzle-orm';
+import { relations, sql } from 'drizzle-orm';
 import { cuid2 } from 'drizzle-cuid2/postgres';
 
 export const users = pgTable('users', {
@@ -221,6 +221,16 @@ export const landAppraisalLetters = pgTable('land_appraisal_letters', {
   occupation: text('occupation').notNull(),
   usedFor: text('used_for').notNull(),
   appraisalPrice: text('appraisal_price').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+});
+
+export const guestBooks = pgTable('guest_books', {
+  id: cuid2('id').defaultRandom().primaryKey(),
+  name: varchar('name', { length: 255 }).notNull(),
+  email: varchar('email', { length: 255 }).notNull(),
+  phone: varchar('phone', { length: 255 }).notNull(),
+  purpose: text('purpose').notNull(),
   createdAt: timestamp('created_at').defaultNow(),
   updatedAt: timestamp('updated_at').defaultNow(),
 });

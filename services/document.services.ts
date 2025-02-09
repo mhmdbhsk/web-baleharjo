@@ -28,7 +28,7 @@ export async function getDocumentRequests({
     ...(status && { status }),
   });
 
-  const response = await fetch(`/api/documents/requests?${params}`);
+  const response = await fetch(`/api/documents?${params}`);
   return response.json();
 }
 

@@ -16,30 +16,29 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useQuery } from '@tanstack/react-query';
+import { Loader2 } from 'lucide-react';
 
 export function AreaSelectionForm() {
   const { control, watch } = useFormContext();
-  const selectedRt = watch('rtId');
+  const selectedRw = watch('rwId');
 
-  const { data: rtList } = useQuery({
-    queryKey: ['users', 'rt'],
+  const { data: rwList, isLoading: isLoadingRW } = useQuery({
+    queryKey: ['rw'],
     queryFn: async () => {
-      const res = await fetch('/api/users/area?role=RT');
-      if (!res.ok) throw new Error('Failed to fetch RT list');
+      const res = await fetch('/api/rw');
+      if (!res.ok) throw new Error('Failed to fetch RW list');
       return res.json();
     },
   });
 
-  const { data: rwList } = useQuery({
-    queryKey: ['users', 'rw', selectedRt],
+  const { data: rtList, isLoading: isLoadingRT } = useQuery({
+    queryKey: ['rt', selectedRw],
     queryFn: async () => {
-      const rt = rtList?.find((r: any) => r.id === selectedRt);
-      if (!rt) return [];
-      const res = await fetch(`/api/users/area?role=RW&areaRt=${rt.areaRt}`);
-      if (!res.ok) throw new Error('Failed to fetch RW list');
+      const res = await fetch(`/api/rt?rwId=${selectedRw}`);
+      if (!res.ok) throw new Error('Failed to fetch RT list');
       return res.json();
     },
-    enabled: !!selectedRt && !!rtList,
+    enabled: !!selectedRw,
   });
 
   return (
@@ -54,23 +53,33 @@ export function AreaSelectionForm() {
       <div className="space-y-4">
         <FormField
           control={control}
-          name="rtId"
-          rules={{ required: 'RT harus dipilih' }}
+          name="rwId"
+          rules={{ required: 'RW harus dipilih' }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>RT</FormLabel>
+              <FormLabel>RW</FormLabel>
               <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Pilih RT" />
+                    <SelectValue placeholder="Pilih RW" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {rtList?.map((rt: any) => (
-                    <SelectItem key={rt.id} value={rt.id}>
-                      {rt.name} - RT {rt.areaRt}
+                  {isLoadingRW ? (
+                    <div className="flex items-center justify-center p-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : rwList?.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      Tidak ada RW tersedia
                     </SelectItem>
-                  ))}
+                  ) : (
+                    rwList?.map((rw: any) => (
+                      <SelectItem key={rw.id} value={rw.id}>
+                        RW {rw.number} - {rw.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />
@@ -80,31 +89,41 @@ export function AreaSelectionForm() {
 
         <FormField
           control={control}
-          name="rwId"
-          rules={{ required: 'RW harus dipilih' }}
+          name="rtId"
+          rules={{ required: 'RT harus dipilih' }}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>RW</FormLabel>
+              <FormLabel>RT</FormLabel>
               <Select
                 onValueChange={field.onChange}
                 value={field.value}
-                disabled={!selectedRt}
+                disabled={!selectedRw}
               >
                 <FormControl>
                   <SelectTrigger>
                     <SelectValue
                       placeholder={
-                        selectedRt ? 'Pilih RW' : 'Pilih RT terlebih dahulu'
+                        selectedRw ? 'Pilih RT' : 'Pilih RW terlebih dahulu'
                       }
                     />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {rwList?.map((rw: any) => (
-                    <SelectItem key={rw.id} value={rw.id}>
-                      {rw.name} - RW {rw.areaRw}
+                  {isLoadingRT ? (
+                    <div className="flex items-center justify-center p-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    </div>
+                  ) : rtList?.length === 0 ? (
+                    <SelectItem value="" disabled>
+                      Tidak ada RT tersedia
                     </SelectItem>
-                  ))}
+                  ) : (
+                    rtList?.map((rt: any) => (
+                      <SelectItem key={rt.id} value={rt.id}>
+                        RT {rt.number} - {rt.name}
+                      </SelectItem>
+                    ))
+                  )}
                 </SelectContent>
               </Select>
               <FormMessage />

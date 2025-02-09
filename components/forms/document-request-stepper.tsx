@@ -48,10 +48,28 @@ export function DocumentRequestStepper() {
 
   const handleSubmit = async (data: any) => {
     try {
-      await createDocumentRequest(data);
+      const [rtResponse, rwResponse] = await Promise.all([
+        fetch(`/api/rt/${data.rtId}`),
+        fetch(`/api/rw/${data.rwId}`),
+      ]);
+
+      const rt = await rtResponse.json();
+      const rw = await rwResponse.json();
+
+      const documentData = {
+        ...data,
+        rtId: rt.userId,
+        rwId: rw.userId,
+        areaRt: rt.number,
+        areaRw: rw.number,
+        status: 'PENDING',
+      };
+
+      await createDocumentRequest(documentData);
       toast.success('Permohonan berhasil diajukan');
       router.push('/dasbor/surat');
     } catch (error) {
+      console.error('Error submitting document request:', error);
       toast.error('Gagal mengajukan permohonan');
     }
   };
