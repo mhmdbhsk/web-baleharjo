@@ -19,6 +19,7 @@ import {
   Workflow,
   FileStack,
   Gauge,
+  Map,
 } from 'lucide-react';
 
 export default function DashboardLayout({
@@ -53,6 +54,12 @@ export default function DashboardLayout({
       href: '/dasbor/lembaga',
       icon: Landmark,
       label: 'Lembaga',
+      subgroup: 'Manajemen',
+    },
+    {
+      href: '/dasbor/wilayah',
+      icon: Map,
+      label: 'Wilayah',
       subgroup: 'Manajemen',
     },
     {
@@ -108,10 +115,7 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-col min-h-screen">
       <div className="lg:hidden fixed top-[78px] left-0 right-0 z-50 bg-white border-b border-gray-200 p-4">
-        <div className="flex items-center justify-between max-w-7xl mx-auto w-full">
-          <div className="flex items-center">
-            <span className="font-medium">Settings</span>
-          </div>
+        <div className="flex items-center justify-end max-w-7xl mx-auto w-full">
           <Button
             variant="outline"
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

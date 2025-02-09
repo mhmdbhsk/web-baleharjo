@@ -93,22 +93,20 @@ export default function OrganizationChart() {
   );
 
   return (
-    <div className="p-8">
-      <Tree
-        lineWidth={'2px'}
-        lineColor={'#22c55e'}
-        lineBorderRadius={'10px'}
-        label={
-          <StyledNode
-            node={orgData}
-            onAdd={handleAdd}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        }
-      >
-        {orgData.children?.map((child) => renderTree(child))}
-      </Tree>
-    </div>
+    <Tree
+      lineWidth={'2px'}
+      lineColor={'#22c55e'}
+      lineBorderRadius={'10px'}
+      label={
+        <StyledNode
+          node={orgData}
+          onAdd={handleAdd}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+        />
+      }
+    >
+      {orgData.children?.map((child) => renderTree(child))}
+    </Tree>
   );
 }

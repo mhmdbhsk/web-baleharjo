@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { users } from '@/db/schema';
-import { desc, sql, isNull } from 'drizzle-orm';
+import { eq, and, isNull, desc, sql } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
 import { hashPassword } from '@/lib/auth/session';
 
@@ -16,9 +16,16 @@ export async function GET(request: NextRequest) {
     }
 
     const searchParams = request.nextUrl.searchParams;
+    const role = searchParams.get('role');
     const page = parseInt(searchParams.get('page') || '1');
     const limit = parseInt(searchParams.get('limit') || '10');
     const offset = (page - 1) * limit;
+
+    // Build where conditions
+    let whereConditions = and(
+      isNull(users.deletedAt),
+      role ? eq(users.role, role as 'ADMIN' | 'RT' | 'RW') : undefined
+    );
 
     const [userList, totalCount] = await Promise.all([
       db
@@ -28,19 +35,28 @@ export async function GET(request: NextRequest) {
           email: users.email,
           role: users.role,
           createdAt: users.createdAt,
-          updatedAt: users.updatedAt
+          updatedAt: users.updatedAt,
+          areaRt: users.areaRt,
+          areaRw: users.areaRw,
         })
         .from(users)
-        .where(isNull(users.deletedAt))
+        .where(whereConditions)
         .orderBy(desc(users.createdAt))
         .limit(limit)
         .offset(offset),
       db
         .select({ count: sql<number>`count(*)` })
         .from(users)
-        .where(isNull(users.deletedAt))
+        .where(whereConditions)
         .then(res => Number(res[0].count))
     ]);
+
+    // If role parameter is present but no pagination
+    if (role && !searchParams.has('page')) {
+      return NextResponse.json({
+        data: userList
+      });
+    }
 
     return NextResponse.json({
       message: 'Users fetched successfully',
