@@ -52,7 +52,7 @@ export default function InstitutionalsPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col mb-8">
             <span className="text-3xl font-bold">
-              <span className="text-orange-500">Kelembagaan </span>
+              <span className="text-orange-500 mb-2">Kelembagaan </span>
               Baleharjo
             </span>
             <span>Kelembagaan yang terdapat di Kelurahan Karanganyar</span>
@@ -81,7 +81,7 @@ export default function InstitutionalsPage() {
     <div className="py-16">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col mb-8">
-          <span className="text-3xl font-bold">
+          <span className="text-3xl font-bold mb-2">
             <span className="text-orange-500">Kelembagaan </span>
             Baleharjo
           </span>

@@ -157,6 +157,7 @@
     "react-resizable-panels": "^2.1.7",
     "react-textarea-autosize": "^8.5.7",
     "react-tweet": "^3.2.1",
+    "reactflow": "^11.11.4",
     "recharts": "^2.15.1",
     "remark-emoji": "^5.0.1",
     "server-only": "^0.0.1",

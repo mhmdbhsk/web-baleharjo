@@ -22,7 +22,7 @@ export default function BlurHashImage({
   alt,
   blurhash,
   className,
-  aspectRatio = 'auto',
+  aspectRatio = 'wide',
   rounded = false,
   fill = true,
   width,
