@@ -5,7 +5,7 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
 
@@ -29,14 +29,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const data = await request.json();
     const [updatedRW] = await db
       .update(rw)
       .set(data)
-      .where(eq(rw.id, params.id))
+      .where(eq(rw.id, id))
       .returning();
     return NextResponse.json(updatedRW);
   } catch (error) {
@@ -46,12 +48,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const [deletedRW] = await db
       .delete(rw)
-      .where(eq(rw.id, params.id))
+      .where(eq(rw.id, id))
       .returning();
     return NextResponse.json(deletedRW);
   } catch (error) {

@@ -11,27 +11,11 @@ import {
 } from 'lucide-react';
 
 import { Skeleton } from '@/components/ui/skeleton';
+import { Profile, SocialMedia } from '@/db/schema';
 
 interface FooterProps {
-  profile?: {
-    id: string;
-    name: string;
-    description: string;
-    address: string;
-    phone: string;
-    email: string;
-    logo: string;
-    createdAt: Date;
-    updatedAt: Date;
-  };
-  socials?: {
-    id: string;
-    name: string;
-    url: string;
-    icon: string;
-    createdAt: Date;
-    updatedAt: Date;
-  }[];
+  profile?: Profile;
+  socials?: SocialMedia[];
   navigationLinks: {
     name: string;
     href: string;
@@ -125,13 +109,13 @@ export default function Footer({
                         rel="noopener noreferrer"
                         className="text-gray-600 hover:text-gray-900"
                       >
-                        {social.name === 'Facebook' && (
+                        {social.platform === 'Facebook' && (
                           <Facebook className="h-5 w-5" />
                         )}
-                        {social.name === 'Instagram' && (
+                        {social.platform === 'Instagram' && (
                           <Instagram className="h-5 w-5" />
                         )}
-                        {social.name === 'Youtube' && (
+                        {social.platform === 'Youtube' && (
                           <Youtube className="h-5 w-5" />
                         )}
                       </a>

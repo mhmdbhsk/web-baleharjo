@@ -15,11 +15,24 @@ export default function ProfilePage() {
   const { mutate } = useMutation({
     mutationFn: (values: Partial<Profile>) =>
       updateProfile({
+        title: values.title ?? '',
+        description: values.description ?? '',
+        history: values.history ?? '',
+        vision: values.vision ?? '',
+        mission: values.mission ?? '',
         address: values.address ?? '',
         phone: values.phone ?? '',
         email: values.email ?? '',
-        vision: values.vision ?? '',
-        mission: values.mission ?? '',
+        logo: values.logo ?? '',
+        blurhash: values.blurhash ?? '',
+        area: values.area ?? '',
+        topography: values.topography ?? '',
+        boundaries: values.boundaries ?? {
+          north: '',
+          south: '',
+          east: '',
+          west: '',
+        },
       }),
     onSuccess: () => {
       refetch();
@@ -33,15 +46,34 @@ export default function ProfilePage() {
 
   return (
     <section>
-      <h1 className="text-lg lg:text-2xl font-medium text-gray-900">Profil</h1>
+      <h1 className="text-lg lg:text-2xl font-medium text-gray-900 mb-2">
+        Profil
+      </h1>
 
       <ProfileForm
         initialValues={{
+          title: data?.data?.title ?? '',
+          description: data?.data?.description ?? '',
+          history: data?.data?.history ?? '',
+          vision: data?.data?.vision ?? '',
+          mission: data?.data?.mission ?? '',
           address: data?.data?.address ?? '',
           phone: data?.data?.phone ?? '',
           email: data?.data?.email ?? '',
-          vision: data?.data?.vision ?? '',
-          mission: data?.data?.mission ?? '',
+          logo: data?.data?.logo ?? '',
+          blurhash: data?.data?.blurhash ?? '',
+          area: data?.data?.area ?? '',
+          topography: data?.data?.topography ?? '',
+          boundaries: {
+            // @ts-ignore
+            north: data?.data?.boundaries?.north ?? '',
+            // @ts-ignore
+            south: data?.data?.boundaries?.south ?? '',
+            // @ts-ignore
+            east: data?.data?.boundaries?.east ?? '',
+            // @ts-ignore
+            west: data?.data?.boundaries?.west ?? '',
+          },
         }}
         isLoading={isLoading}
         onSubmit={(values) => mutate(values)}

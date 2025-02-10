@@ -6,7 +6,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import BlurHashImage from '@/components/blurhash-image';
 import { Building2, History, Map, Target } from 'lucide-react';
-import ReactFlow, { Background, Controls, MarkerType } from 'reactflow';
+import ReactFlow, { Background, Controls, Edge, MarkerType } from 'reactflow';
 import 'reactflow/dist/style.css';
 
 export default function ProfilePage() {
@@ -97,65 +97,73 @@ export default function ProfilePage() {
 
             <TabsContent value="sejarah" className="prose max-w-none">
               <h2 className="text-2xl font-semibold mb-4">Sejarah Desa</h2>
-              <p>{profile?.data.history || 'Belum ada data sejarah'}</p>
+              <p>{profile?.data?.history || 'Belum ada data sejarah'}</p>
             </TabsContent>
 
             <TabsContent value="struktur">
               <h2 className="text-2xl font-semibold mb-6">
                 Struktur Pemerintahan Desa
               </h2>
-              {profile?.data.structure && (
+              {/* {profile?.data?.structure && (
                 <OrganizationChart data={profile.data.structure} />
-              )}
+              )} */}
+              <BlurHashImage
+                alt="Struktur Pemerintahan Desa"
+                blurhash="LCR{x%.7-;jF?GR+W=My-@oexuoI"
+                src="/struktur-organisasi.png"
+                rounded
+              />
             </TabsContent>
 
             <TabsContent value="visi-misi" className="space-y-8">
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Visi</h2>
                 <p className="text-gray-600">
-                  {profile?.data.vision || 'Belum ada data visi'}
+                  {profile?.data?.vision || 'Belum ada data visi'}
                 </p>
               </div>
               <div>
                 <h2 className="text-2xl font-semibold mb-4">Misi</h2>
                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-                  {profile?.data.missions?.map(
-                    (mission: string, index: number) => (
-                      <li key={index}>{mission}</li>
-                    )
-                  )}
+                  {profile?.data?.mission || 'Belum ada data misi'}
                 </ul>
               </div>
             </TabsContent>
 
             <TabsContent value="geografis" className="prose max-w-none">
               <h2 className="text-2xl font-semibold mb-4">Kondisi Geografis</h2>
-              <BlurHashImage
-                alt="Persebaran potensi desa"
-                blurhash="LUN,[400~q.8ofj[RjWB%MxuMyM{"
-                src="/persebaran.webp"
-                rounded
-              />
-              <div className="grid md:grid-cols-2 gap-8">
+              <div className="rounded border">
+                <BlurHashImage
+                  alt="Persebaran potensi desa"
+                  blurhash="LUN,[400~q.8ofj[RjWB%MxuMyM{"
+                  src="/persebaran.webp"
+                  rounded
+                />
+              </div>
+              <div className="grid md:grid-cols-2 gap-8 mt-8">
                 <div>
                   <h3 className="text-lg font-medium mb-2">Lokasi</h3>
-                  <p className="text-gray-600">{profile?.data.address}</p>
+                  <p className="text-gray-600">{profile?.data?.address}</p>
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Batas Wilayah:</h4>
                     <ul className="space-y-1 text-gray-600">
-                      <li>Utara: {profile?.data.boundaries?.north}</li>
-                      <li>Selatan: {profile?.data.boundaries?.south}</li>
-                      <li>Timur: {profile?.data.boundaries?.east}</li>
-                      <li>Barat: {profile?.data.boundaries?.west}</li>
+                      {/* @ts-ignore */}
+                      <li>Utara: {profile?.data?.boundaries?.north}</li>
+                      {/* @ts-ignore */}
+                      <li>Selatan: {profile?.data?.boundaries?.south}</li>
+                      {/* @ts-ignore */}
+                      <li>Timur: {profile?.data?.boundaries?.east}</li>
+                      {/* @ts-ignore */}
+                      <li>Barat: {profile?.data?.boundaries?.west}</li>
                     </ul>
                   </div>
                 </div>
                 <div>
                   <h3 className="text-lg font-medium mb-2">Luas Wilayah</h3>
-                  <p className="text-gray-600">{profile?.data.area} km²</p>
+                  <p className="text-gray-600">{profile?.data?.area} km²</p>
                   <div className="mt-4">
                     <h4 className="font-medium mb-2">Topografi:</h4>
-                    <p className="text-gray-600">{profile?.data.topography}</p>
+                    <p className="text-gray-600">{profile?.data?.topography}</p>
                   </div>
                 </div>
               </div>
@@ -235,7 +243,8 @@ function OrganizationChart({ data }: { data: any[] }) {
     <div className="h-[600px] bg-gray-50 rounded-lg">
       <ReactFlow
         nodes={positionNodes()}
-        edges={edges}
+        // @ts-ignore
+        edges={edges.filter((edge): edge is Edge => edge !== null)}
         fitView
         className="bg-gray-50"
       >
@@ -334,7 +343,7 @@ function OrganizationChart({ data }: { data: any[] }) {
 
 //             <TabsContent value="sejarah" className="prose max-w-none">
 //               <h2 className="text-2xl font-semibold mb-4">Sejarah Desa</h2>
-//               <p>{profile?.data.history || 'Belum ada data sejarah'}</p>
+//               <p>{profile?.data?.history || 'Belum ada data sejarah'}</p>
 //             </TabsContent>
 
 //             <TabsContent value="struktur">
@@ -342,7 +351,7 @@ function OrganizationChart({ data }: { data: any[] }) {
 //                 Struktur Pemerintahan Desa
 //               </h2>
 //               <div className="grid md:grid-cols-3 gap-6">
-//                 {profile?.data.structure?.map((staff: any) => (
+//                 {profile?.data?.structure?.map((staff: any) => (
 //                   <div
 //                     key={staff.id}
 //                     className="bg-white p-6 rounded-lg shadow-sm"
@@ -358,13 +367,13 @@ function OrganizationChart({ data }: { data: any[] }) {
 //               <div>
 //                 <h2 className="text-2xl font-semibold mb-4">Visi</h2>
 //                 <p className="text-gray-600">
-//                   {profile?.data.vision || 'Belum ada data visi'}
+//                   {profile?.data?.vision || 'Belum ada data visi'}
 //                 </p>
 //               </div>
 //               <div>
 //                 <h2 className="text-2xl font-semibold mb-4">Misi</h2>
 //                 <ul className="list-disc list-inside space-y-2 text-gray-600">
-//                   {profile?.data.missions?.map(
+//                   {profile?.data?.missions?.map(
 //                     (mission: string, index: number) => (
 //                       <li key={index}>{mission}</li>
 //                     )
@@ -384,23 +393,23 @@ function OrganizationChart({ data }: { data: any[] }) {
 //               <div className="grid md:grid-cols-2 gap-8">
 //                 <div>
 //                   <h3 className="text-lg font-medium mb-2">Lokasi</h3>
-//                   <p className="text-gray-600">{profile?.data.address}</p>
+//                   <p className="text-gray-600">{profile?.data?.address}</p>
 //                   <div className="mt-4">
 //                     <h4 className="font-medium mb-2">Batas Wilayah:</h4>
 //                     <ul className="space-y-1 text-gray-600">
-//                       <li>Utara: {profile?.data.boundaries?.north}</li>
-//                       <li>Selatan: {profile?.data.boundaries?.south}</li>
-//                       <li>Timur: {profile?.data.boundaries?.east}</li>
-//                       <li>Barat: {profile?.data.boundaries?.west}</li>
+//                       <li>Utara: {profile?.data?.boundaries?.north}</li>
+//                       <li>Selatan: {profile?.data?.boundaries?.south}</li>
+//                       <li>Timur: {profile?.data?.boundaries?.east}</li>
+//                       <li>Barat: {profile?.data?.boundaries?.west}</li>
 //                     </ul>
 //                   </div>
 //                 </div>
 //                 <div>
 //                   <h3 className="text-lg font-medium mb-2">Luas Wilayah</h3>
-//                   <p className="text-gray-600">{profile?.data.area} km²</p>
+//                   <p className="text-gray-600">{profile?.data?.area} km²</p>
 //                   <div className="mt-4">
 //                     <h4 className="font-medium mb-2">Topografi:</h4>
-//                     <p className="text-gray-600">{profile?.data.topography}</p>
+//                     <p className="text-gray-600">{profile?.data?.topography}</p>
 //                   </div>
 //                 </div>
 //               </div>

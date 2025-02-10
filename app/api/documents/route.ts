@@ -28,10 +28,6 @@ export async function GET(request: NextRequest) {
       whereClause = eq(documentRequests.userId, currentUser.id);
     }
 
-    if (whereClause) {
-      query = db.select().from(documentRequests).where(whereClause);
-    }
-
     const [documents, totalCount] = await Promise.all([
       query
         .orderBy(desc(documentRequests.createdAt))

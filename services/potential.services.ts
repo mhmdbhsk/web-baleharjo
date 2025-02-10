@@ -1,16 +1,9 @@
+import { Potential } from '@/db/schema';
 
 interface GetPotentialParams {
   page?: number;
   limit?: number;
   search?: string;
-}
-
-interface Potential {
-  id: string;
-  title: string;
-  description: string;
-  image: string;
-  blurhash: string;
 }
 
 interface PotentialResponse {

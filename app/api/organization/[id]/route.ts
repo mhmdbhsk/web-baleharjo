@@ -6,13 +6,15 @@ import { ApiResponse } from '@/types/api';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .select()
       .from(organizationMembers)
-      .where(eq(organizationMembers.id, params.id))
+      .where(eq(organizationMembers.id, id))
       .limit(1);
 
     if (!result[0]) {
@@ -36,14 +38,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
+
     const body = await request.json();
     const result = await db
       .update(organizationMembers)
       .set({ ...body, updatedAt: new Date() })
-      .where(eq(organizationMembers.id, params.id))
+      .where(eq(organizationMembers.id, id))
       .returning();
 
     if (!result[0]) {
@@ -67,15 +71,20 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: {
+    params: Promise<{
+      id: string
+    }>
+  }
 ) {
+  const { id } = await params
   try {
     const result = await db
       .delete(organizationMembers)
-      .where(eq(organizationMembers.id, params.id))
+      .where(eq(organizationMembers.id, id))
       .returning();
 
-    if (!result[0]) {
+    if (!result) {
       return NextResponse.json({
         message: 'Organization member not found',
         error: 'Not found'
@@ -84,7 +93,7 @@ export async function DELETE(
 
     return NextResponse.json({
       message: 'Organization member deleted successfully',
-      data: result[0]
+      data: result
     });
   } catch (error) {
     return NextResponse.json({

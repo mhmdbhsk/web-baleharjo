@@ -45,21 +45,21 @@ export default function ContactPage() {
                   <MapPin className="w-6 h-6 text-orange-500 mt-1" />
                   <div>
                     <h3 className="font-semibold text-lg">Alamat</h3>
-                    <p className="text-gray-600">{profile?.data.address}</p>
+                    <p className="text-gray-600">{profile?.data?.address}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Phone className="w-6 h-6 text-orange-500 mt-1" />
                   <div>
                     <h3 className="font-semibold text-lg">Telepon</h3>
-                    <p className="text-gray-600">{profile?.data.phone}</p>
+                    <p className="text-gray-600">{profile?.data?.phone}</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
                   <Mail className="w-6 h-6 text-orange-500 mt-1" />
                   <div>
                     <h3 className="font-semibold text-lg">Email</h3>
-                    <p className="text-gray-600">{profile?.data.email}</p>
+                    <p className="text-gray-600">{profile?.data?.email}</p>
                   </div>
                 </div>
               </>

@@ -7,13 +7,15 @@ import { format, formatISO } from 'date-fns';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .select()
       .from(activity)
-      .where(eq(activity.id, params.id))
+      .where(eq(activity.id, id))
       .limit(1);
 
     if (!result[0]) {
@@ -41,8 +43,9 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const body = await request.json();
     const result = await db
@@ -52,7 +55,7 @@ export async function PUT(
         date: formatISO(body.date),
         updatedAt: new Date()
       })
-      .where(eq(activity.id, await params.id))
+      .where(eq(activity.id, id))
       .returning();
 
     if (!result[0]) {
@@ -80,12 +83,13 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const result = await db
       .delete(activity)
-      .where(eq(activity.id, params.id))
+      .where(eq(activity.id, id))
       .returning();
 
     if (!result[0]) {

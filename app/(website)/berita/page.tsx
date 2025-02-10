@@ -15,7 +15,7 @@ export default function NewsPage() {
     error,
   } = useQuery({
     queryKey: ['blog'],
-    queryFn: getBlogPosts,
+    queryFn: () => getBlogPosts({}),
   });
 
   return (

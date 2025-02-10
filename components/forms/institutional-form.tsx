@@ -46,7 +46,7 @@ export function InstitutionalForm({
     defaultValues: {
       name: initialData?.name || '',
       description: initialData?.description || '',
-      logo: initialData?.logo || undefined,
+      logo: undefined,
     },
   });
 

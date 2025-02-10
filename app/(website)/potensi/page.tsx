@@ -55,7 +55,7 @@ export default function PotentialPage() {
                       <BlurHashImage
                         src={potential?.image}
                         alt={potential?.title}
-                        blurhash={potential?.blurhash}
+                        blurhash={potential?.blurhash as string}
                         className="object-cover"
                         aspectRatio="square"
                       />

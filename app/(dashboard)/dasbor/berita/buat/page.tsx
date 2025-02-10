@@ -5,8 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { SettingsProvider } from '@/components/editor/settings';
-import { PlateEditor as CustomEditor } from '@/components/editor/plate-editor';
 import { toast } from 'sonner';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
@@ -139,14 +137,7 @@ export default function CreateBlogPost() {
           <div
             className="h-screen w-full border rounded-lg"
             data-registry="plate"
-          >
-            <SettingsProvider>
-              <CustomEditor
-                content={form.watch('content')}
-                setContent={(value) => form.setValue('content', value)}
-              />
-            </SettingsProvider>
-          </div>
+          ></div>
 
           <Button type="submit" className="mt-4">
             Publish

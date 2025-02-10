@@ -2,7 +2,6 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { PlateEditor } from '@/components/editor/plate-editor';
 import { Button } from '@/components/ui/button';
 
 export default async function EditBlogPostPage({
@@ -39,7 +38,7 @@ export default async function EditBlogPostPage({
         />
       </div>
 
-      <PlateEditor content={content} setContent={setContent} />
+      {/* <PlateEditor content={content} setContent={setContent} /> */}
 
       <div className="mt-4">
         <Button onClick={handleSave}>Save</Button>

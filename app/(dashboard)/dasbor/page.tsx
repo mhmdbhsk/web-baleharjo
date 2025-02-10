@@ -40,9 +40,9 @@ export default function DashboardPage() {
     queryFn: () => getInstitutionals(),
   });
 
-  const { data: news, isLoading: isLoadingNews } = useQuery({
-    queryKey: ['news'],
-    queryFn: getBlogPosts,
+  const { data: posts, isLoading: isLoadingPosts } = useQuery({
+    queryKey: ['posts', { page: 1, limit: 100 }],
+    queryFn: () => getBlogPosts({ page: 1, limit: 100 }),
   });
 
   const stats = [
@@ -60,7 +60,7 @@ export default function DashboardPage() {
     },
     {
       name: 'Total Berita',
-      value: news?.data?.length || 0,
+      value: posts?.data?.length || 0,
       icon: Newspaper,
       description: 'Jumlah berita yang dipublikasikan',
     },
@@ -149,8 +149,8 @@ export default function DashboardPage() {
           .fill(0)
           .map(
             (_, month) =>
-              news?.data?.filter((item: any) => {
-                const date = new Date(item.createdAt);
+              posts?.data?.filter((post: any) => {
+                const date = new Date(post.createdAt);
                 return date.getMonth() === month;
               }).length || 0
           ),
@@ -161,7 +161,7 @@ export default function DashboardPage() {
     ],
   };
 
-  if (isLoadingGuestBooks || isLoadingInstitutions || isLoadingNews) {
+  if (isLoadingGuestBooks || isLoadingInstitutions || isLoadingPosts) {
     return (
       <div className="space-y-4">
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">

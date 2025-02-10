@@ -45,12 +45,12 @@ export default function DashboardLayout({
       label: 'Profil',
       subgroup: 'Pengaturan',
     },
-    {
-      href: '/dasbor/struktur-pemerintahan',
-      icon: Workflow,
-      label: 'Struktur Pemerintahan',
-      subgroup: 'Pengaturan',
-    },
+    // {
+    //   href: '/dasbor/struktur-pemerintahan',
+    //   icon: Workflow,
+    //   label: 'Struktur Pemerintahan',
+    //   subgroup: 'Pengaturan',
+    // },
     {
       href: '/dasbor/lembaga',
       icon: Landmark,

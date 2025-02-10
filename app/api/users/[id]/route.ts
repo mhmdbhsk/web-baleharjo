@@ -5,8 +5,10 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .select({
@@ -19,7 +21,7 @@ export async function GET(
         deletedAt: users.deletedAt
       })
       .from(users)
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, id))
       .limit(1);
 
     if (!result[0]) {
@@ -45,14 +47,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const body = await request.json();
     const result = await db
       .update(users)
       .set({ ...body, updatedAt: new Date() })
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, id))
       .returning({
         id: users.id,
         email: users.email,
@@ -86,8 +90,10 @@ export async function PUT(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const body = await request.json();
 
@@ -97,7 +103,7 @@ export async function PATCH(
         ...body,
         updatedAt: new Date(),
       })
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, id))
       .returning();
 
     return NextResponse.json(user[0]);
@@ -112,8 +118,10 @@ export async function PATCH(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .update(users)
@@ -121,7 +129,7 @@ export async function DELETE(
         deletedAt: new Date(),
         updatedAt: new Date()
       })
-      .where(eq(users.id, params.id))
+      .where(eq(users.id, id))
       .returning({
         id: users.id,
         email: users.email,

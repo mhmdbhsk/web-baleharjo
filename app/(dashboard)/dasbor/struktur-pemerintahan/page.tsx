@@ -7,9 +7,7 @@ export default async function SocialMediaPage() {
         Struktur Pemerintahan
       </h1>
 
-      <div className="overflow-x-auto">
-        <OrganizationChart />
-      </div>
+      <div className="overflow-x-auto">{/* <OrganizationChart /> */}</div>
     </section>
   );
 }

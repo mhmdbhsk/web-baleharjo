@@ -169,7 +169,7 @@ export default function InstitutionalPage() {
 
       <DataTable
         columns={columns}
-        data={data?.data || []}
+        data={(data?.data as InstitutionalDto[]) || []}
         searchKey="name"
         isLoading={isLoadingData}
         pageCount={data?.metadata?.totalPages || 1}
@@ -232,7 +232,7 @@ export default function InstitutionalPage() {
           <div className="space-y-4">
             {selectedInstitutional?.logo && (
               <BlurHashImage
-                src={selectedInstitutional.logo}
+                src={selectedInstitutional.logo as string}
                 alt={selectedInstitutional.name}
                 blurhash={selectedInstitutional.blurhash || ''}
                 rounded

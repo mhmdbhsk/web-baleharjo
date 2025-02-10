@@ -17,8 +17,8 @@ export const blogPostSchema = z.object({
 
 export type BlogPost = z.infer<typeof blogPostSchema>;
 
-export async function getBlogPosts() {
-  const res = await fetch('/api/blog');
+export async function getBlogPosts({ page, limit }: { page?: number; limit?: number }) {
+  const res = await fetch(`/api/blog?page=${page}&limit=${limit}`);
   if (!res.ok) throw new Error('Failed to fetch blog posts');
   return res.json();
 }

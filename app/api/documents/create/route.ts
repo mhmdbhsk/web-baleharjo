@@ -116,47 +116,47 @@ export async function POST(request: NextRequest) {
           });
           break;
 
-        case DocumentType.BUSINESS_LETTER:
-          await db.insert(businessLetterRequests).values({
-            address: '',
-            mothersName: data.mothersName,
-            name: '',
-            nationality: data.nationality,
-            // nik: data.ktp
-            business: data.businessName,
-            businessType: data.businessType,
-            businessAddress: data.businessAddress,
-            businessDescription: data.businessDescription || '',
-            documentRequestId: documentRequest.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          });
-          break;
+        // case DocumentType.BUSINESS_LETTER:
+        //   await db.insert(businessLetterRequests).values({
+        //     address: '',
+        //     mothersName: data.mothersName,
+        //     name: '',
+        //     nationality: data.nationality,
+        //     // nik: data.ktp
+        //     business: data.businessName,
+        //     businessType: data.businessType,
+        //     businessAddress: data.businessAddress,
+        //     businessDescription: data.businessDescription || '',
+        //     documentRequestId: documentRequest.id,
+        //     createdAt: new Date(),
+        //     updatedAt: new Date(),
+        //   });
+        //   break;
 
-        case DocumentType.LAND_APPRAISAL:
-          await db.insert(landAppraisalLetters).values({
-            documentRequestId: documentRequest.id,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            appraisalPrice: data.appraisalPrice,
-            area: data.area,
-            boundaryEast: data.boundaryEast,
-            boundaryNorth: data.boundaryNorth,
-            boundaryWest: data.boundaryWest,
-            boundarySouth: data.boundarySouth,
-            builtOn: data.builtOn,
-            certificate: data.certificate,
-            no: data.no,
-            noC: data.noC,
-            noPersil: data.noPersil,
-            occupation: data.occupation,
-            sinceDate: data.sinceDate,
-            usedFor: data.userFor,
-            name: data.name,
-            address: data.address,
-            certificateNumber: data.certificate,
-          });
-          break;
+        // case DocumentType.LAND_APPRAISAL:
+        //   await db.insert(landAppraisalLetters).values({
+        //     documentRequestId: documentRequest.id,
+        //     createdAt: new Date(),
+        //     updatedAt: new Date(),
+        //     appraisalPrice: data.appraisalPrice,
+        //     area: data.area,
+        //     boundaryEast: data.boundaryEast,
+        //     boundaryNorth: data.boundaryNorth,
+        //     boundaryWest: data.boundaryWest,
+        //     boundarySouth: data.boundarySouth,
+        //     builtOn: data.builtOn,
+        //     certificate: data.certificate,
+        //     no: data.no,
+        //     noC: data.noC,
+        //     noPersil: data.noPersil,
+        //     occupation: data.occupation,
+        //     sinceDate: data.sinceDate,
+        //     usedFor: data.userFor,
+        //     name: data.name,
+        //     address: data.address,
+        //     certificateNumber: data.certificate,
+        //   });
+        //   break;
       }
     }
 

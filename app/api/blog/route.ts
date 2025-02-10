@@ -3,7 +3,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db/drizzle';
 import { blogPosts } from '@/db/schema';
-import { desc, sql } from 'drizzle-orm';
+import { desc, sql, eq } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth/get-current-user';
 
 export async function GET(request: NextRequest) {
@@ -69,22 +69,40 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export const PUT = async (req: NextApiRequest, res: NextApiResponse) => {
-  const { title, content } = req.body;
-  const postId = req.query.id;
+export async function PUT(request: NextRequest) {
+  try {
+    const currentUser = await getCurrentUser();
+    if (!currentUser || currentUser.role !== 'ADMIN') {
+      return NextResponse.json({
+        message: 'Unauthorized access',
+        error: 'Admin privileges required'
+      }, { status: 401 });
+    }
 
-  if (!title || !content) {
-    return res.status(400).json({ error: 'Invalid body' });
+    const body = await request.json();
+    const { id, title, content } = body;
+
+    if (!id || !title || !content) {
+      return NextResponse.json({
+        message: 'Missing required fields',
+        error: 'Invalid request body'
+      }, { status: 400 });
+    }
+
+    const result = await db
+      .update(blogPosts)
+      .set({ title, content, updatedAt: new Date() })
+      .where(eq(blogPosts.id, id));
+
+    return NextResponse.json({
+      message: 'Blog post updated successfully',
+      data: result
+    });
+  } catch (error) {
+    return NextResponse.json({
+      message: 'Failed to update blog post',
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    }, { status: 500 });
   }
-
-  if (!postId) {
-    return res.status(400).json({ error: 'Invalid post ID' });
-  }
-
-  res.status(200).json({ message: 'Blog post updated' });
 }
 
-export const handleMethodNotAllowed = (req: NextApiRequest, res: NextApiResponse) => {
-  res.setHeader('Allow', ['POST']);
-  res.status(405).end(`Method ${req.method} Not Allowed`);
-};

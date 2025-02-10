@@ -94,8 +94,8 @@ export default function InstitutionalsPage() {
                 <Card className="flex flex-col h-full hover:shadow-lg transition-shadow cursor-pointer">
                   <div className="relative w-full overflow-hidden rounded-t-lg">
                     <BlurHashImage
-                      blurhash={org.blurhash}
-                      src={org.logo}
+                      blurhash={org.blurhash as string}
+                      src={org.logo as string}
                       alt={org.name}
                       className="object-cover"
                     />

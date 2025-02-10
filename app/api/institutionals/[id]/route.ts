@@ -6,13 +6,14 @@ import { ApiResponse } from '@/types/api';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const result = await db
       .select()
       .from(institutional)
-      .where(eq(institutional.id, params.id))
+      .where(eq(institutional.id, id))
       .limit(1);
 
     if (!result[0]) {
@@ -36,14 +37,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const body = await request.json();
     const result = await db
       .update(institutional)
       .set({ ...body, updatedAt: new Date() })
-      .where(eq(institutional.id, params.id))
+      .where(eq(institutional.id, id))
       .returning();
 
     if (!result[0]) {
@@ -67,12 +70,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .delete(institutional)
-      .where(eq(institutional.id, params.id))
+      .where(eq(institutional.id, id))
       .returning();
 
     if (!result[0]) {

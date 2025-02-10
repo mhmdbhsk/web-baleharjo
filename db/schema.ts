@@ -3,6 +3,7 @@ import {
   varchar,
   text,
   timestamp,
+  jsonb,
 } from 'drizzle-orm/pg-core';
 import { relations, sql } from 'drizzle-orm';
 import { cuid2 } from 'drizzle-cuid2/postgres';
@@ -122,6 +123,7 @@ export const profile = pgTable('profile', {
   id: cuid2('id').defaultRandom().primaryKey(),
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description').notNull(),
+  history: text('history'),
   vision: text('vision'),
   mission: text('mission'),
   address: text('address'),
@@ -129,6 +131,14 @@ export const profile = pgTable('profile', {
   email: varchar('email', { length: 255 }),
   logo: text('logo'),
   blurhash: text('blurhash'),
+  area: varchar('area', { length: 50 }), // Luas wilayah
+  topography: text('topography'), // Kondisi topografi
+  boundaries: jsonb('boundaries').default({
+    north: '',
+    south: '',
+    east: '',
+    west: ''
+  }), // Batas wilayah
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -366,3 +376,44 @@ export type NewRW = typeof rw.$inferInsert;
 export type RT = typeof rt.$inferSelect;
 export type NewRT = typeof rt.$inferInsert;
 
+// Activity types
+export type Activity = typeof activity.$inferSelect;
+export type NewActivity = typeof activity.$inferInsert;
+
+// Activity Logs types
+export type ActivityLog = typeof activityLogs.$inferSelect;
+export type NewActivityLog = typeof activityLogs.$inferInsert;
+
+// Blog Posts types
+export type BlogPost = typeof blogPosts.$inferSelect;
+export type NewBlogPost = typeof blogPosts.$inferInsert;
+
+// Organization Members types
+export type OrganizationMember = typeof organizationMembers.$inferSelect;
+export type NewOrganizationMember = typeof organizationMembers.$inferInsert;
+
+// Institutional types
+export type Institution = typeof institutional.$inferSelect;
+export type NewInstitution = typeof institutional.$inferInsert;
+
+// Potential types
+export type Potential = typeof potential.$inferSelect;
+export type NewPotential = typeof potential.$inferInsert;
+
+// Social Media types
+export type SocialMedia = typeof socialMedia.$inferSelect;
+export type NewSocialMedia = typeof socialMedia.$inferInsert;
+
+// Profile types
+export type Profile = typeof profile.$inferSelect;
+export type NewProfile = typeof profile.$inferInsert;
+
+// Document Numbers types
+export type DocumentNumber = typeof documentNumbers.$inferSelect;
+export type NewDocumentNumber = typeof documentNumbers.$inferInsert;
+
+// Guest Book types
+export type GuestBook = typeof guestBooks.$inferSelect;
+export type NewGuestBook = typeof guestBooks.$inferInsert;
+
+export type Institutional = typeof institutional.$inferSelect;

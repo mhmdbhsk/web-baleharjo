@@ -5,13 +5,15 @@ import { eq } from 'drizzle-orm';
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .select()
       .from(socialMedia)
-      .where(eq(socialMedia.id, params.id))
+      .where(eq(socialMedia.id, id))
       .limit(1);
 
     if (!result[0]) {
@@ -35,14 +37,16 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const body = await request.json();
     const result = await db
       .update(socialMedia)
       .set({ ...body, updatedAt: new Date() })
-      .where(eq(socialMedia.id, params.id))
+      .where(eq(socialMedia.id, id))
       .returning();
 
     if (!result[0]) {
@@ -66,12 +70,14 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
+
   try {
     const result = await db
       .delete(socialMedia)
-      .where(eq(socialMedia.id, params.id))
+      .where(eq(socialMedia.id, id))
       .returning();
 
     if (!result[0]) {
